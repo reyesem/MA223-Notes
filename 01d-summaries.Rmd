@@ -1,0 +1,12 @@
+# Presenting the Evidence (Summarizing Data) {#Summaries}
+
+If you open any search engine and look up "data visualization," you will be quickly overwhelmed by a host of pages, texts, and software filled with tools for summarizing your data.  Here is the bottom line: once you collect data, you must summarize and present it in a way that allows you to address the question of interest.  It is both that simple and that complicated.
+
+```{block2, type="rmdfivefund"}
+__Fundamental Idea III__: The use of data for decision making requires that the data be summarized and presented in ways that address the question of interest.
+```
+
+This is the goal of any data visualization, no matter how simple or complex --- to help turn the data into information to address some question.  Pretty pictures for the sake of pretty pictures is not helpful.  In this section, we will consider various simple graphical and numerical summaries to help build a case for addressing the question of interest.
+
+
+## Characteristics of a Distribution

@@ -1,1 +1,20 @@
-# MA223-Notes
+# Course Notes for MA223 (Engineering Statistics I)
+
+An engineering school in the Midwest, [Rose-Hulman Institute of Technology](https://www.rose-hulman.edu) requires the majority of its majors to have an Introductory Statistics course, MA223.  The course is the primary entry point into the statistics curriculum on campus.  In 2017, we began an effort to reform the curriculum to focus on statistical modeling and randomization-based inference.  This short text serves as the course note packet for students taking the course.
+
+## Background on the Course
+Technically calculus-based, this introductory course is designed to capitalize on the strong mathematical background of Rose-Hulman students while emphasizing statistical concepts over mathematical computations. The statistical process is highlighted: formulating a question of interest in terms of parameters that characterize the population, collecting data appropriately for addressing the question of interest, summarizing the information available within the sample, characterizing the variability in our statistics, and performing inference about the parameters using the available sample. 
+
+Historically, we followed a fairly traditional syllabus that relied on a spiral approach to the material.  We introduced students to elementary probability theory followed by techniques for graphically and numerically summarizing a distribution of the sample.  We continued building their probability background building toward the concept of sampling distributions.  We introduced bootstrapping, the Central Limit Theorem, and results about Student's t-distribution as potential models for the sampling distribution.  We then formalized inference for the mean of a single sample.  We then repeated this process (probability, data summaries, modeling, inference) for ANOVA, the means of two independent samples, the means of two paired samples, and simple linear regression.  Inference for a single proportion is an optional topic as engineering students tend to work with numeric responses.  
+
+
+## Revised Curriculum
+With regard to students understanding the big picture of Statistics, we had success with the above curriculum.  However, the statistics faculty on campus agreed that we were unable to really adequately introduce students to multivariate thinking with the current curriculum.  As a result, we felt like many students left the course trying to cram every dataset they encountered into one of the five scenarios discussed in the introductory course.  Since this is a terminal course for the vast majority of students, we wanted to expose them to the broader field of Statistics while still providing them with the foundation they would need to be successful in the workplace.
+
+We decided we wanted our curriculum to emphasize statistical modeling instead of cookbook of methods.  We also wanted to introduce students to computational thinking through randomization-based methods for inference.  Keeping in mind that the majority of our students need an exposure to designing experiments, the text uses ANOVA as the background for introducing inference.  We follow this up with an introduction to regression modeling.  The five analytical scenarios previously discussed are then shown to be special cases of the more general linear model.
+
+The text was chosen to be agnostic with respect to the choice of software.  While many in statistics would advocate for a programming language like R or SAS, many engineering faculty are familiar only with menu-driven software like Minitab or Excel.  We primarily use R and Minitab on our campus; the text was written with the ability to allow the instructor to choose the software that meets their needs while still conveying the key concepts of the course.
+
+
+## Notes on the Repository
+This is a work in progress; the text is written using the [Bookdown Package in R](https://bookdown.org/yihui/bookdown/).  The repository contains the code used to generate each chapter and compile the final text.

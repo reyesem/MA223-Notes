@@ -1,0 +1,39 @@
+---
+title: "Statistical Modeling for Engineers and Scientists"
+author: "Eric M Reyes"
+date: "Last Updated: `r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [refs223notes.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "Course notes for MA223 (Engineering Statistics I) at Rose-Hulman Institute of Technology."
+---
+
+# (PART) Part I: Distributional Quartet {-}
+
+```{r setup, include=FALSE}
+# Define default chunk options
+knitr::opts_chunk$set(
+  error = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "",
+  fig.align = "center",
+  fig.path = "./Images/"
+)
+
+
+# Load necessary packages
+pkgs <- c(
+  "tidyverse",
+  "stringr",
+  "broom"
+)
+for(pkg in pkgs) library(pkg, character.only = TRUE)
+
+
+# Automatically create a bib database for R packages
+knitr::write_bib(
+  c(.packages(), "bookdown", "knitr", "rmarkdown"), "packages.bib")
+```
