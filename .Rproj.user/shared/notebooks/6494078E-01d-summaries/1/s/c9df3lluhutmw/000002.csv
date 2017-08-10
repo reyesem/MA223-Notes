@@ -1,0 +1,6 @@
+"0","ggplot(data = filter(deepwater.df, Respiratory_Symptoms==""Yes""),"
+"0","       mapping = aes(x = Volunteer_Location, y = Frequency)) +"
+"0","  geom_bar(stat = ""identity"") +"
+"0","  geom_label(aes(label = Frequency)) +"
+"0","  labs(x = """", y = ""Number of Volunteers"") +"
+"0","  theme_bw(12)"

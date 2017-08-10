@@ -1,5 +1,5 @@
 ---
-title: "Statistical Modeling for Engineers and Scientists"
+title: "Statistical Foundations for Engineers and Scientists"
 author: "Eric M Reyes"
 date: "Last Updated: `r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -10,7 +10,7 @@ link-citations: yes
 description: "Course notes for MA223 (Engineering Statistics I) at Rose-Hulman Institute of Technology."
 ---
 
-# (PART) Part I: Distributional Quartet {-}
+# (PART) Unit I: Language and Logic of Inference {-}
 
 ```{r setup, include=FALSE}
 # Define default chunk options

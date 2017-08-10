@@ -1,13 +1,13 @@
 # Gathering the Evidence (Data Collection) {#Data}
 
-Consider again the goal of statistical inference --- to use a sample as a snapshot to say something about the underlying population (Figure \@ref(fig:data-statistical-process)).  This generally provokes unease in people, leading to a distrust of statistical results.  In this section we take on that distrust head on.  
+Consider again the goal of statistical inference --- to use a sample as a snapshot to say something about the underlying population (Figure \@ref(fig:data-statistical-process)).  This generally provokes unease in people, leading to a distrust of statistical results.  In this section we attack that distrust head on.  
 
 ```{r data-statistical-process, echo=FALSE, ref.label="basics-statistical-process", fig.cap="Illustration of the statistical process (reprinted from Chapter 1)."}
 ```
 
 
 ## What Makes a Sample Reliable
-If we are going to have some amount of faith in the statistical results we produce, we must have data we find to be reliable.  _The Treachery of Images_ is a canvas painting depicting a pipe, below which the artist wrote the French phrase for "This is not a pipe" (Figure \@ref(fig:data-pipe-img)).  Regarding the painting, the artist said
+If we are going to have some amount of faith in the statistical results we produce, we must have data in which we can place our trust.  _The Treachery of Images_ (Figure @\ref(fig:data-pipe-img)) is a canvas painting depicting a pipe, below which the artist wrote the French phrase for "This is not a pipe."  Regarding the painting, the artist said
 
   > The famous pipe.  How people reproached me for it!  And yet, could you stuff my pipe?  No, it's just a representation, is it not?  So if I had written on my picture "This is a pipe," I'd have been lying!
 
@@ -39,11 +39,11 @@ This provides a nice backdrop for discussing what it means to be representative.
 When thinking about whether a sample is representative, focus your attention to the characteristics specific to your research question.
 ```
 
-Does that mean the sample is useless?  Yes and no.  The sample collected cannot be used to answer our initial question of interest.  No statistical method can fix bad data; that is, statistics adheres to the "garbage-in, garbage-out" phenomena.  If the data is bad, no analysis will undo that.  While the sample cannot be used to answer our initial question, it could be used to address a different question:
+Does that mean the sample is useless?  Yes and no.  The sample collected cannot be used to answer our initial question of interest.  No statistical method can fix bad data; statistics adheres to the "garbage-in, garbage-out" phenomena.  If the data is bad, no analysis will undo that.  While the sample cannot be used to answer our initial question, it could be used to address a different question however:
 
   > What is the average amount of debt in student loans carried by graduating seniors from Rose-Hulman whose parent is a faculty member at the university?
 
-For this revised question, the sample is indeed representative.  If we are working with previously collected data, we must consider the population to which our results will generalize.  That is, for what population is the given sample representative.  If we are collecting our data, we need to be sure we collect data in such a way that the data is representative.  Let's first look at what _not_ to do.
+For this revised question, the sample may indeed be representative.  If we are working with previously collected data, we must consider the population to which our results will generalize.  That is, for what population is the given sample representative.  If we are collecting our data, we need to be sure we collect data in such a way that the data is representative.  Let's first look at what _not_ to do.
 
 
 ## Poor Methods of Data Collection
@@ -91,7 +91,7 @@ A sample in which the population is first divided into groups, or strata, based 
 
 There are countless sampling techniques used in practice.  The two described above can be very useful starting point for developing a custom method suitable for a particular application.  Their benefit stems from their use of randomization.
 
-This section is entitled "Preferred Methods" because while these methods are ideal, they are not always practical.  For example, consider the [Seismic Activity Case Study](#CaseGreece); it would be impossible to make a list of all seismic activity that has ever or will ever occur in Greece and then take a simple random sample from that list.  Again, our key is to obtain a _representative_ sample; while _randomization_ may be a nice tool for accomplishing this, we may appeal to the composition of the sample itself to justify its use.
+This section is entitled "Preferred Methods" because while these methods are ideal, they are not always practical.  For example, consider the [Deepwater Horizon Case Study](#CaseDeepwater); conceptually, we can take a simple random sample of the volunteers for our study.  However, as with any study involving human subjects, researchers would be required to obtain consent from each subject in the study.  That is, a volunteer has the right to refuse to participate in the study.  Therefore, it is unlikely that a simple random sample as described above could be obtained.  Again, the key is to obtain a _representative_ sample; while random selection may be a nice tool for accomplishing this, we may need to appeal to the composition of the sample itself to justify its use.  Based on the characteristics of those willing to participate in the study, do we feel the study participants form a representative group of all volunteers?  That is the essential question.  This is often why studies report a table summarizing subject demographics such as age, gender, etc.  It is also why it is extremely important for researchers to describe how subjects were selected so that readers may make the judgement for themselves whether the sample is representative.
 
 
 ## Two Types of Studies
@@ -133,7 +133,7 @@ A study in which the subjects are _randomly_ assigned to the treatment groups un
 
 It is common to think that anytime the environment is "controlled" by the researcher that an experiment is taking place, but the defining characteristic is the random assignment to treatment groups (sometimes referred to as the _factor_ under study).  In the example above, both study designs involved a controlled setting (the delivery room of a hospital) in which trained staff (the nurse) delivered the shot.  However, only design (B) is a controlled experiment because the researchers randomly determined into which group the infant would be placed.
 
-To understand the impact of randomization, suppose that we had conducted a study as in design (A); further, the results suggest that those infants who were given a shot while using Kangaroo Care cried for a shorter time period, on average.  Can we conclude that it was the Kangaroo Care that led to the shorter crying time?  Maybe.  Consider the following two potential explanations for the resulting data:
+To understand the impact of random allocation, suppose that we had conducted a study as in design (A); further, the results suggest that those infants who were given a shot while using Kangaroo Care cried for a shorter time period, on average.  Can we conclude that it was the Kangaroo Care that led to the shorter crying time?  Maybe.  Consider the following two potential explanations for the resulting data:
 
   (1)  Kangaroo Care is very effective; as a result, those children who were given Kangaroo Care had reduced crying time following the Vitamin K shot.
   (2)  It turns out that those nurses who chose to implement Kangaroo Care (remember, they have a choice under design (A) whether they implement the method) were also the nurses with a gentler bedside manner.  Therefore, these nurses tended to be very gentle when giving the Vitamin K shot whereas the nurses who chose not to implement Kangaroo Care tended to just jab the needle in when giving the shot.  As a result, the reduced crying time is not a result of the Kangaroo Care but the manner in which the shot was given.
@@ -154,9 +154,9 @@ knitr::include_graphics("./images/Data-Confounding.jpg")
 Confounders are variables that influence _both_ the factor of interest and the response.
 ```
 
-Observational studies are subject to confounding; thus, controlled experiments are often considered the gold standard in research because they allow us to infer cause-and-effect relationships from the data.  Why does the randomization make such an impact?  Because the randomization removes the impact of confounders.  Let's return to the hypothetical study.  Suppose there are nurses with a gentle bedside manner and those who are a little less gentle.  If the infants are randomized to Kangaroo Care, then for every gentle nurse who is told to implement Kangaroo Care while giving the shot, there is a gentle nurse who is told to not implement Kangaroo Care.  Similarly, for every mean nurse who is told to implement Kangaroo Care while giving a shot, there is a mean nurse who is told to not implement Kangaroo Care.  This is illustrated in Figure \@ref(fig:data-randomization).  For an observational study, the treatment groups are unbalanced; there is a higher fraction (11/12 compared to 1/4) of friendly nurses in the Kangaroo Care group compared to the No Kangaroo Care group.  For the controlled experiment however, the treatment groups are balanced; there is approximately the same fraction of friendly nurses in both groups.  Randomization is the great equalize; it ensures that the two groups are similar in all respects; therefore, any differences we observe between the two groups _must_ be due to the grouping and not an underlying confounding variable.
+Observational studies are subject to confounding; thus, controlled experiments are often considered the gold standard in research because they allow us to infer cause-and-effect relationships from the data.  Why does the random allocation make such an impact?  Because it removes the impact of confounders.  Let's return to the hypothetical study.  Suppose there are nurses with a gentle bedside manner and those who are a little less gentle.  If the infants are randomly assigned to one of the two treatment groups, then for every gentle nurse who is told to implement Kangaroo Care while giving the shot, there is a gentle nurse who is told to not implement Kangaroo Care.  Similarly, for every mean nurse who is told to implement Kangaroo Care while giving a shot, there is a mean nurse who is told to not implement Kangaroo Care.  This is illustrated in Figure \@ref(fig:data-randomization).  For an observational study, the treatment groups are unbalanced; there is a higher fraction (11/12 compared to 1/4) of friendly nurses in the Kangaroo Care group compared to the No Kangaroo Care group.  For the controlled experiment however, the treatment groups are balanced; there is approximately the same fraction of friendly nurses in both groups.  Random assignment is the great equalizer; it tends to result in groups which are similar in all respects; therefore, any differences we observe between the groups _must_ be due to the grouping and not an underlying confounding variable.
 
-```{r data-randomization, echo=FALSE, fig.cap="Illustration of the impact of randomization in study design. For the observational study, the treatment groups are unbalanced.  For the controlled experiment, the treatment groups are balanced."}
+```{r data-randomization, echo=FALSE, fig.cap="Illustration of the impact of random assignment in study design. For the observational study, the treatment groups are unbalanced.  For the controlled experiment, the treatment groups are balanced."}
 knitr::include_graphics("./images/Data-Randomization.jpg")
 ```
 
@@ -164,10 +164,12 @@ knitr::include_graphics("./images/Data-Randomization.jpg")
 Randomly assigning treatment groups balances the groups with respect to the confounders; that is, the treatment groups are similar.  Therefore, any differences between the two groups can be attributed to the grouping factor itself.
 ```
 
-While controlled experiments are a fantastic study design, we should not discount the use of observational studies.  Consider the [Seismic Activity Case Study](#CaseGreece); suppose we are interested in the following question:
+While controlled experiments are a fantastic study design, we should not discount the use of observational studies.  Consider the [Deepwater Horizon Case Study](#CaseDeepwater); suppose we are interested in the following question:
 
-  > Is there evidence that the average uniform duration differs between locations for which the soil consists of alluvial deposits and locations for which it does not?
+  > Is there evidence that volunteers who are directly exposed to oil have an increased risk of developing adverse respiratory symptoms compared to those who are not directly exposed to oil?
   
-The response is the uniform duration; the factor defining the treatment groups is whether the soil consists of alluvial deposits.  There is no way to conduct a controlled experiment to address this question.  We cannot randomize the soil content to various locations.  This does not mean the data is useless.  But, it does mean we will need to be sure we address the potential confounding in the analysis.  We will discuss such methods in the latter half of the text.  The big idea is that in order to make causal conclusions, we must be able to state that the two treatment groups are balanced with respect to any potential confounders; randomization is one technique for accomplishing this.
+The response is whether a volunteer develops adverse respiratory symptoms; the factor of interest is whether the volunteer has direct exposure to oil.  We could conduct a controlled experiment by randomly determining which volunteers are assigned to wildlife clean up and which are assigned to administrative tasks, for example.  However, it may be that volunteer tasks need to be determined by skillset or by greatest need at the time of the person volunteers.  It may not be feasible to randomly assign volunteers to specific positions.  Or, it could be that the data was obtained after the fact; that is, the data is not the result of a planned study in which case random assignment is not possible because volunteers self-selected into positions in the past.  If random assignment is not possible, it does not mean the data is useless.  But, it does mean we will need to be sure we address the potential confounding when performing the analysis and discussing the results.  The latter half of the text will discuss methods for addressing confounding.  
+
+The big idea is that in order to make causal conclusions, we must be able to state that the two treatment groups are balanced with respect to any potential confounders; random assignment is one technique for accomplishing this.
 
 [^debt]: http://ticas.org/sites/default/files/pub_files/Debt_Facts_and_Sources.pdf

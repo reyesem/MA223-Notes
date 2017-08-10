@@ -1,0 +1,222 @@
+# Presenting the Evidence (Summarizing Data) {#Summaries}
+
+If you open any search engine and look up "data visualization," you will be quickly overwhelmed by a host of pages, texts, and software filled with tools for summarizing your data.  Here is the bottom line: a good visualization is one that helps you answer your question of interest.  It is both that simple and that complicated.
+
+```{block2, type="rmdfivefund"}
+__Fundamental Idea III__: The use of data for decision making requires that the data be summarized and presented in ways that address the question of interest.
+```
+
+Whether a simple or complex, all graphical and numerical summaries should help turn the data into usable information.  Pretty pictures for the sake of pretty pictures are not helpful.  In this section, we will consider various simple graphical and numerical summaries to help build a case for addressing the question of interest.
+
+
+## Characteristics of a Distribution (Summarizing a Single Variable)
+Remember that because of _variability_, the key to asking good questions is to not ask questions about individual values but to characterize the underlying _distribution_ (see Definition \@ref(def:defn-distribution)).  Therefore, characterizing the underlying distribution is also the key to a good visualization or numeric summary.  Let's examine the uniform duration from the [Seismic Activity Case Study](#CaseGreece); the data is shown in Figure \@ref(fig:summaries-greece-dotplot).
+
+```{r summaries-greece-data, echo=FALSE, ref.label="casegreece-data"}
+```
+
+```{r summaries-greece-dotplot, echo=FALSE, ref.label="questions-greece-dotplot", fig.cap="Uniform duration (s) for 121 seismic events in Greece."}
+```
+
+```{r summaries-greece-numeric, echo=FALSE}
+# Measures of location and spread
+ud.summaries <- greece.df %>%
+  select(Uniform_Duration) %>%
+  summarise(Mean = mean(Uniform_Duration),
+            Median = median(Uniform_Duration),
+            Q25 = quantile(Uniform_Duration, prob = c(0.25)),
+            Q75 = quantile(Uniform_Duration, prob = c(0.75)),
+            Max = max(Uniform_Duration),
+            Min = max(Uniform_Duration),
+            SD = sd(Uniform_Duration),
+            Var = var(Uniform_Duration),
+            IQR = Q75 - Q25)
+```
+
+With any graphic, we tend to be drawn to three components:
+
+  - _where_ the values tend to be, 
+  - _how tightly_ the values tend to be clustered there, and
+  - _the way_ the values tend to cluster.
+  
+Notice that about half of the seismic events in Greece had a uniform duration longer than `r round(ud.summaries$Median, 2)` seconds.  Only about 25% of seismic events had a uniform duration less than `r round(ud.summaries$Q25, 2)` seconds.  These are measures of _location_.  In particular, these are known as __percentiles__, of which the __median__, __first quartile__ and __third quartile__ are commonly used examples.
+
+```{definition, label=defn-percentile, name="Percentile"}
+The value $q$ such that $k$% of the values in the distribution are less than or equal to $q$.  For example,
+
+  - 25% of values in a distribution are less than or equal to the 25-th percentile (known as the first quartile).
+  - 50% of values in a distribution are less than or equal to the 50-th percentile (known as the median).
+  - 75% of values in a distribution are less than or equal to the 75-th percentile (known as the third quartile).
+
+```
+
+The __average__ is also a common measure of location.  The uniform duration of a seismic event is `r round(ud.summaries$Mean, 2)` seconds, on average.
+
+```{definition, label=defn-average, name="Average"}
+Also known as the "mean," this measure of location represents the balance point for the distribution.  It is denoted by $\bar{x}$.
+
+When referencing the average for a population, it can also be called the "Expected Value," and is often denoted by $\mu$.
+```
+
+As we have already noted, the uniform duration is not equivalent for all seismic events; there is _variability_ in the measurements.  Measures of _spread_ quantify the variability of values within a distribution.  Common examples include the __standard deviation__ (related to __variance__) and __interquartile range__.  For the [Seismic Activity Case Study](#CaseGreece), the uniform duration varied with a standard deviation of `r round(ud.summaries$SD, 2)` seconds; the interquartile range for the uniform duration was `r round(ud.summaries$IQR, 2)` seconds.  Neither of these values has a natural interpretation; larger values of these measures indicate a higher degree of variability in the data.  The standard deviation is often reported more often than the variance since it is on the same scale as the original data; however, as we will see later, the variance is useful from a mathematical perspective for derivations.
+
+```{definition, label=defn-variance, name="Variance"}
+A measure of spread, this roughly captures the average distance values in the distribution are from the mean.
+```
+
+```{definition, label=defn-standard-deviation, name="Standard Deviation"}
+A measure of spread, this is the square root of the variance.
+```
+
+```{definition, label=defn-interquartile-range, name="Interquartile Range"}
+The distance between the first and third quartiles.  This measure of spread indicates the range over which the middle 50% of the data is spread.
+```
+
+The measures we have discussed so far are illustrated in Figure \@ref(fig:summaries-summaries).
+
+```{r summaries-summaries, echo=FALSE, fig.cap="Illustration of measures of location and spread for a distribution of values."}
+knitr::include_graphics("./images/Summaries-Summaries.jpg")
+```
+
+Finally, consider the _shape_ of the distribution of uniform duration we have observed.  The uniform duration tends to be smaller (values cluster around 0), but occasionally there is a seismic event which lasts a little longer.  This gives the distribution the appearance of being a slide.  Distributions which look like mirror images around the median are referred to as __symmetric__; the distribution of uniform duration is __asymmetric__ since it does not create a mirror image.
+
+```{definition, label=defn-symmetric, name="Symmetric vs. Asymmetric"}
+A distribution is symmetric if when folded at the median, the two halves appear to be mirror images.  Asymmetric distributions are those which are not symmetric (also referred to as "skewed").
+```
+
+The _dot plot_ in Figure \@ref(fig:summaries-greece-dotplot) gives us some idea of the location, spread, and shape of the distribution, making it a useful graphic.  It is characterizing the __distribution of the sample__ we have observed.
+
+```{definition, label=defn-distribution-sample, name="Distribution of the Sample"}
+The pattern of variability in the observed values of a variable.
+```
+
+When the sample is not large, a dot plot is reasonable.  Other common visualizations for a single variable include a _jitter plot_, _box plot_, _histogram_, or _density plot_ (smoothed histogram).  The uniform duration for the [Seismic Activity Case Study](#CaseGreece) is summarized using various methods in Figure \@ref(fig:summaries-univariate).  The latter three visualizations are more helpful when the dataset is very large and plotting the raw values actually hides the distribution.  There is no right or wrong graphic; it is about choosing the graphic which addresses the question and adequately portrays the distribution.
+
+```{r summaries-univariate, echo=FALSE, fig.cap="Four graphical summaries of the uniform duration for the Seismic Activity Case study."}
+p1 <- ggplot(data = greece.df,
+             mapping = aes(x = Uniform_Duration, y = 1)) +
+  geom_jitter(height = 0.2) +
+  labs(x = "Uniform Duration (s)", title = "Jitter Plot") +
+  coord_cartesian(ylim = c(0, 2)) +
+  theme_bw(12) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+p2 <- ggplot(data = greece.df,
+             mapping = aes(y = Uniform_Duration, x = 1)) +
+  geom_boxplot() +
+  labs(y = "Uniform Duration (s)", title = "Boxplot") +
+  coord_flip() +
+  theme_bw(12) +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+p3 <- ggplot(data = greece.df,
+             mapping = aes(x = Uniform_Duration)) +
+  geom_histogram(binwidth = 1, colour = "black") +
+  labs(x = "Uniform Duration (s)", y = "Frequency of Events", 
+       title = "Histogram") +
+  theme_bw(12)
+
+p4 <- ggplot(data = greece.df,
+             mapping = aes(x = Uniform_Duration)) +
+  geom_density(colour = "black", size = 1.25, fill = "grey50") +
+  labs(x = "Uniform Duration (s)", y = "Density", title = "Density Plot") +
+  theme_bw(12)
+
+gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+```
+
+The numeric summaries of a distribution are known as __statistics__.  While parameters characterize a variable at the population level, statistics characterize a variable at the sample level.
+
+```{definition, label=defn-statistic, name="Statistic"}
+Numeric quantity which summarizes the distribution of a variable within a _sample_.
+```
+
+Why would we compute statistics?  Remember the goal of this discipline is to use the sample to say something about the underlying population.  As long as the sample is representative, the distribution of the sample should reflect the __distribution of the population__.  Now we see the real importance of having a representative sample; it allows us to say that what we observe in the sample is a good proxy for what is happening in the population.
+
+```{definition, label=defn-distribution-population, name="Distribution of the Population"}
+The pattern of variability in values of a variable at the population level.  Generally, this is impossible to know, but we might model it.
+```
+
+That is, the mean in the sample should approximate (estimate) the mean in the population; the standard deviation of the sample should estimate the standard deviation in the population; and, the shape of the sample should approximate the shape of the population, etc.  The sample is acting as a representation in all possible ways of the population.
+
+```{block2, type="rmdkeyidea"}
+A representative sample reflects the population; therefore, we can use statistics as estimates of the population parameters.
+```
+
+Let's pull all this together in order to begin addressing a question of interest:
+
+  > Is there evidence that the average uniform duration for seismic events in Greece exceeds 5 seconds?
+
+We previously discussed (see Chapter \@ref(Questions)) how to frame this question as a hypothesis.  Here, we qualitatively provide an answer to this question.  For the events observed, the average uniform duration was `r round(ud.summaries$Mean, 2)`; this value alone suggests that the data is at least consistent with the idea that the average uniform duration for seismic events in Greece is larger than 5 seconds.  However, remember that this is not the population but only a sample; therefore, we must also consider the variability in the data.  Given the large spread of the uniform duration (especially with a bulk of the values being below 5 seconds), we might be hesitant to say the data provides "evidence" that the average uniform duration exceeds 5 seconds.  Again, the difference between data "being consistent with" and "providing evidence for" a hypothesis might seem subtle at this point.  We will continue to formalize this as we move forward, but again think about a trial.  The evidence could be consistent with guilt but not so strong that it goes "beyond a reasonable doubt."  Saying the data "provides evidence" of a statement is trying to get beyond that reasonable doubt.  
+
+As we see in this argument, the key to answering a question like this is to have a sense of both the location and spread of the data, making graphics which illustrate both to be those which are useful.  Any of the graphics above fit this description.
+
+
+## Partitioning Variability (Summarizing Relationships)
+The summaries discussed above are nice for examining a single variable.  In general, research questions of interest typically involve the relationship between two or more variables.  Graphics which are successful help to _partition the variability_, a key idea in statistics.  We have already argued that variability makes addressing questions difficult.  Statistics helps us to distinguish the various sources of that variability; we try to answer the question "why aren't all the values the same?"  Let's consider an example.
+
+  > Is it reasonable the average uniform duration is similar for sesimic events regardless of whether the soil consists of alluvial deposits, or is there evidence that the average uniform duration differs between these two types of soil?
+  
+Notice that this question involves two variables --- the uniform duration as well as whether the soil at the location consists of alluvial deposits.  A good graphic will help us tease out how much of the differences in the uniform duration is due to the type of soil at the location.  First, consider a common graphic which is __not__ useful (see Figure \@ref(fig:summaries-bad-bar)).  
+
+```{r summaries-bad-bar, echo=FALSE, fig.cap="Illustration of a poor graphic; the graphic does not give us a sense of variability needed to address the question of interest."}
+ggplot(data = greece.df,
+       mapping = aes(y = Uniform_Duration, x = Soil_Soft_Alluvial_Deposits)) +
+  stat_summary(fun.y = "mean", geom = "bar") +
+  labs(x = "Does the Soil Contain Soft Alluvial Deposits?", 
+       y = "Average Uniform Duration (s)") +
+  theme_bw(12)
+```
+
+To see the problem with this graphic, consider the _violin plot_ illustrated in Figure \@ref(fig:summaries-greece-violin).  A violin plot is a generalization on box plots in which a density plot is shown side-by-side for each group.  We also illustrate this comparison by overlaying the two densities on the same plot (Figure \@ref(fig:summaries-greece-density)).
+
+```{r summaries-greece-violin, echo=FALSE, fig.cap="Comparison of the uniform duration for locations with soft alluvial soil deposits and those without using violin plots."}
+ggplot(data = greece.df,
+       mapping = aes(y = Uniform_Duration, x= Soil_Soft_Alluvial_Deposits)) +
+  geom_violin() +
+  labs(x = "Does the Soil Contain Soft Alluvial Deposits?",
+       y = "Average Uniform Duration (s)") +
+  theme_bw(12)
+```
+
+```{r summaries-greece-density, echo=FALSE, fig.cap="Comparison of the uniform duration for locations with soft alluvial soil deposits and those without using overlayed densities."}
+ud.grp <- greece.df %>%
+  group_by(Soil_Soft_Alluvial_Deposits) %>%
+  summarise(Mean = mean(Uniform_Duration))
+
+ggplot(data = greece.df,
+       mapping = aes(x = Uniform_Duration, colour = Soil_Soft_Alluvial_Deposits,
+                     fill = Soil_Soft_Alluvial_Deposits)) +
+  geom_density(alpha = 0.5) +
+  labs(colour = "Does the Soil Contain Soft Alluvial Deposits?",
+       fill = "Does the Soil Contain Soft Alluvial Deposits?",
+       x = "Average Uniform Duration (s)",
+       y = "Density") +
+  theme_bw(12) +
+  theme(legend.position = "bottom")
+```
+
+From the graphics, we see that while there is a slight difference in the average uniform duration (`r round(filter(ud.grp, Soil_Soft_Alluvial_Deposits=="Yes")$Mean, 2)` seconds for locations with alluvial deposits compared to `r round(filter(ud.grp, Soil_Soft_Alluvial_Deposits=="No")$Mean, 2)` seconds for locations without); however, given the large variation in uniform duration within each group, the difference in the average does not seem very large.  That is, when we compare the entire _distributions_ for each of the two groups, there does not appear to be much difference.
+
+Figure \@ref(fig:summaries-greece-density) also illustrates a useful technique for partitioning variability --- use various aesthetics to reveal different characteristics.  Color, size, and shape can all be useful ways of revealing how groups vary.  For example, consider the relationship between the uniform duration of an event and the size of the earthquake that led to the reading; is it possible that the relationship differs between locations which have soft alluvial deposits and those that do not?  We can use color to help illustrate the differences in the _scatterplot_.
+
+```{r summaries-greece-relationships, echo=FALSE, fig.cap="Relationship of the uniform duration and the magnitude of the corresponding earthquake for locations with and without soft alluvial deposits."}
+ggplot(data = greece.df,
+       mapping = aes(x = Magnitude, y = Uniform_Duration,
+                     colour = Soil_Soft_Alluvial_Deposits)) +
+  geom_point(alpha = 0.75) +
+  geom_smooth(se = FALSE, alpha = 0.75, method = "loess") +
+  labs(x = "Magnitude of Earthquake", y = "Uniform Duration (s)",
+       colour = "Does the Soil Contain Soft Alluvial Deposits?") +
+  scale_colour_manual(values = c("blue", "red")) +
+  theme_bw(12) +
+  theme(legend.position = "bottom")
+```
+
+The graphic reveals that the trend (captured by the smoothing line) for soils with and without soft alluvial deposits is roughly the same.  Again, the key to the graphic is partitioning out the variability in the response (uniform duration) --- some of the differences are due to locations that have different magnitudes (x-axis) and some is due to different soil compositions (color).
+
+The key to a good summary is understanding the question of interest and building a graphic which addresses this question through a useful characterization of the variability.
