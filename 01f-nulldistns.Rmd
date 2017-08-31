@@ -33,7 +33,7 @@ Consider the question we have been asking regarding the [Deepwater Horizon Case 
   
 Remember, we framed this question through statements about a parameter in Chapter \@ref(Questions):
   
-  > $H_0:$ the proportion of volunteers assigned to clean wildlife who develop adverse respiratory symptoms is no more than 0.20.
+  > $H_0:$ the proportion of volunteers assigned to clean wildlife who develop adverse respiratory symptoms is no more than 0.20.  
   > $H_1:$ the proportion of volunteers assigned to clean wildlife who develop adverse respiratory symptoms exceeds 0.20.
   
 Within the sample we observed that 27.8% of volunteers experienced adverse symptoms, which is certainly more than the 0.20 in the claim; therefore, the data is at least trending toward the alternative hypothesis.  However, it is possible that we just have a strange sample.  Remember in our discussion of sampling distributions in the previous chapter, however, that we expect the estimate to vary from one sample to another.  Essentially, we need to know whether 27.8% of volunteers experiencing symptoms is a strong signal that the rate within the popoulation is larger than 0.2 (1 in 5) or 27.8% is simply a fluke that might happen due to sampling variability.  While we are going to be attacking the question differently in this chapter than the previous, we see that the key is still variability in the estimate.  That is, we are back to the _Fourth Fundamental Idea of Inference_.  As stated above, in order to determine evidence for one statement (captured by the alternative hypothesis), we begin by assuming the opposite statement (captured by the null hypothesis) as our working assumption.  That is, if we want to know if 27.8% of volunteers experiencing adverse symptoms is "evidence," we need to figure out what we _expect_ to happen _if only 1 in 5 volunteers actually develop adverse respiratory symptoms_.  
@@ -76,7 +76,7 @@ ggplot(data = deepwater.null.df,
 ## Using the Null Distribution
 From the figure, we see that _if the null hypothesis were true_ --- if only 1 in 5 volunteers assigned to clean wildlife experienced symptoms --- then in a sample of 54 individuals, we would expect the proportion who experienced symptoms to be somewhere between 0.1 and 0.3.  _If the null hypothesis were true_, it would be nearly impossible that half of the individuals experienced symptoms (since 0.5 is way off in the tail of the distribution).  The further in the tail region, the more extreme the sample.  The question is then how extreme is our sample?  Again, the null distribution is just setting up expectations; now, we have to weigh the evidence against those expectations.
 
-In our sample, we observed 27.8% of volunteers who experienced symptoms.  Since 0.278 is towards the center of the distribution, we would say that it is not an extreme sample.  In order to quantify how extreme (or not extreme) its, we find out what fraction of values are in the tail regions.  Figure \@ref(fig:nulldistns-deepwater-pvalue) illustrates this computation.  Based on the null distribution, there is a 17.2% chance that _if the null hypothesis were true_ --- only 1 in 5 volunteers actually experienced symptoms --- that in a random sample of 54 volunteers we would obtain data this extreme or moreso by chance alone.  Essentially, this tail area is quantifying the strength of the evidence.  The smaller this area, the further in the tail region our data is; that is, our data is more unexpected.  Therefore, small areas indicate that the data (our evidence) does not jive with our expectations under the null (innocence), forcing us to conclude the data provides evidence _against_ the null hypothesis.  In our case, since the area is relatively large, our data is completely consistent with what we might expect if the null were true.  Therefore, in this case, we conclude that there is no evidence that the rate of those experiencing symptoms exceeds 1 in 5.  This area is known as the __p-value__. 
+In our sample, we observed 27.8% of volunteers who experienced symptoms.  Since 0.278 is towards the center of the distribution, we would say that it is not an extreme sample.  In order to quantify how extreme (or not extreme) its, we find out what fraction of values are more extreme (larger than in this case) than the value observed; that is, what fraction of values appear in the right tail of the distribution.  Figure \@ref(fig:nulldistns-deepwater-pvalue) illustrates this computation.  Based on the null distribution, there is a 10.6% chance that _if the null hypothesis were true_ --- only 1 in 5 volunteers actually experienced symptoms --- that in a random sample of 54 volunteers we would obtain data this extreme or moreso by chance alone.  Essentially, this tail area is quantifying the strength of the evidence.  The smaller this area, the further in the tail region our data is; that is, our data is more unexpected.  Therefore, small areas indicate that the data (our evidence) does not jive with our expectations under the null (innocence), forcing us to conclude the data provides evidence _against_ the null hypothesis.  In our case, since the area is relatively large, our data is completely consistent with what we might expect if the null were true.  Therefore, in this case, we conclude that there is no evidence that the rate of those experiencing symptoms exceeds 1 in 5.  This area is known as the __p-value__. 
 
 ```{r nulldistns-deepwater-pvalue, echo=FALSE, fig.cap="Likelihood of obtaining a sample as extreme or moreso as that of the original sample when the parameter of interest is the proportion of volunteers assigned to clean wildlife experiencing adverse respiratory symptoms.  Null hypothesis is that the proportion is 0.20; this is based on a sample of size 54."}
 set.seed(201708)
@@ -85,21 +85,16 @@ deepwater.null.df <- data_frame(
 )
 
 ggplot(data = deepwater.null.df,
-       mapping = aes(x = Props)) +
+       mapping = aes(x = Props, fill = (Props>=0.27777778))) +
   geom_histogram(aes(y = ..count../50000), binwidth = 1/54,
-                 colour = "black", fill = "grey75") +
+                 colour = "black") +
   labs(x = "Proportion of Volunteers Experiencing Adverse Symptoms", 
-       y = "Relative Frequency") +
-  geom_vline(xintercept = 0.27777778, colour = "red", size = 1.5) +
-  geom_vline(xintercept = 0.2 - 0.07777778, colour = "red", size = 1.5) +
-  annotate("segment", x = 0.27777778 + 0.01, y = 0.075, xend = 0.5, yend = 0.075,
-           arrow = arrow(ends = "last"),
-           colour = "red", size = 1.5) +
-  annotate("segment", x = 0.2 - 0.07777778 - 0.01, y = 0.075, xend = 0, yend = 0.075,
-           arrow = arrow(ends = "last"),
-           colour = "red", size = 1.5) +
+       y = "Relative Frequency",
+       fill = "") +
+  geom_vline(xintercept = 0.27777778, colour = "red", size = 1.25, linetype = 2) +
   annotate("label", x = 0.4, y = 0.085, label = "Prob = 0.106") +
-  annotate("label", x = 0.05, y = 0.085, label = "Prob = 0.066") +
+  scale_fill_manual(values = c("grey75", "red")) +
+  guides(fill = "none") +
   theme_bw(12)
 ```
 
@@ -118,11 +113,12 @@ While what constitutes "significant" may vary from discipline to discipline, the
   - $0.001 \leq p < 0.01$: evidence against the null hypothesis.
   - $p < 0.001$: strong evidence against the null hypothesis.
   
+As with any rule of thumb, this should not be considered binding and may vary depending on the application.
 ```
 
 Like confidence intervals, p-values are often misinterpreted.  In fact, they have become so abused that some researchers argue against their use.  It is our opinion that the p-value can be a useful tool once it is appropriately understood; so, let's dispell some of these misconceptions.  Consider these _incorrect_ statements regarding the p-value obtained for the [Deewater Horizon Case Study](#CaseDeepwater) computed above:
 
-  - There is a 17.2% chance that only 1 in 5 volunteers assigned to clean wildlife will experience adverse symptoms.
+  - There is a 10.6% chance that only 1 in 5 volunteers assigned to clean wildlife will experience adverse symptoms.
   - Since the p-value is large, there is evidence (or the data supports the claim) that 1 in 5 volunteers assigned to clean wildlife will experience adverse symptoms.
   
 The first statement incorrectly assumes that there is some chance that the null hypothesis is true.  Remember, our two hypotheses are statements about the parameter.  One is true and other is not.  Our ignorance does not change this; therefore, it does not make sense to talk about the probability of the null being true or false.  Instead, our job is to quantify the likelihood of the data _assuming the null is true_.  The p-value is about the likelihood of the data under a particular model (the null hypothesis).

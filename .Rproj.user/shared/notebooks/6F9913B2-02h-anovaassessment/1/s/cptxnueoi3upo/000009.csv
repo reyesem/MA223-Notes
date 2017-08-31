@@ -1,0 +1,7 @@
+"0","fit <- lm(moral_avg ~ Food_Condition, data = organic.df)"
+"0","fit.aug <- suppressWarnings(augment(fit))"
+"0","ggplot(data = fit.aug,"
+"0","       mapping = aes(sample = .resid)) +"
+"0","  stat_qq() +"
+"0","  labs(x = ""Theoretical Quantiles"", y = ""Sample Quantiles"") +"
+"0","  theme_bw(12)"

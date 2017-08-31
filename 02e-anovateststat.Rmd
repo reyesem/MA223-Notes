@@ -1,0 +1,180 @@
+# Quantifying the Evidence {#ANOVAteststat}
+
+Figure \@ref(fig:anovateststat-boxplots) displays a numeric response across three groups for two different datasets.  Consider the following question:
+
+  > For which dataset is there _stronger_ evidence that the response is associated with the grouping variable?
+
+```{r anovateststat-boxplots, echo=FALSE, fig.cap="Simulated data illustrating that signal strength is determined by partitioning variability. There is a clear signal (difference in the location across groups) for Dataset A but not for Dataset B."}
+set.seed(20170828)
+
+dat <- data_frame(
+  dataset = rep(c("Dataset A", "Dataset B"), each = 90),
+  group = rep(c("Group I", "Group II", "Group III"), each = 30, times = 2),
+  mids = rep(c(5, 6, 7), each = 30, times = 2),
+  halfrange = rep(c(1, 5), each = 90),
+  y = runif(180, min = mids - halfrange, max = mids + halfrange)
+)
+
+dat <- dat %>%
+  group_by(dataset, group) %>%
+  mutate(y = scale(y, center=TRUE, scale=FALSE),
+         y = y + mids) %>%
+  ungroup()
+
+ggplot(data = dat,
+       mapping = aes(x = group, y = y)) +
+  geom_boxplot() +
+  labs(x = "", y = "Response") +
+  theme_bw(12) +
+  facet_wrap(~ dataset)
+```
+
+Nearly everyone will say that Dataset A provides stronger evidence of a relationship between the grouping variable and the response.  We generated these data such that the mean for Groups I, II and II are 5, 6 and 7, respectively, _for both Datasets A and B_.  While there is a difference, on average, in the response across the groups in both cases, it is correct that Dataset A provides stronger evidence for that relationship.  The real question is "what is it that leads everyone to make the same conclusion when we have not yet discussed how to analyze this data?"  When we ask students why they feel Dataset A provides stronger evidence, we typically hear that it is because the "gaps" between the groups "look bigger."  In essence, that is exactly right!
+
+
+## Partitioning Variability
+Subconsciously, when we are deciding whether there is a difference between the groups, we are partitioning the variability in the response.  We are essentially describing two sources of variability: the variability in the response caused by subjects belonging to different groups and the variability in the response within a group (Figure \@ref(fig:anovateststat-partition-variability)).  In both Datasets A and B from Figure \@ref(fig:anovateststat-boxplots), the __between-group variability__ is the same; the difference in the means from one group to another is the same in both cases.  However, the __within-group variability__ is much smaller for Dataset A compared to Dataset B.  
+
+```{r anovateststat-partition-variability, echo=FALSE, fig.cap="Illustration of partitioning the variability in the response to assess the strength of a signal."}
+knitr::include_graphics("./images/ANOVATestStat-Partition-Variability.jpg")
+```
+
+```{definition, label=defn-between-group-variability, name="Between Group Variability"}
+The variability in the average response from one group to another.
+```
+
+```{definition, label=defn-within-group-variability, name="Within Group Variability"}
+The variability in the response within a particular group.
+```
+
+Figure \@ref(fig:anovateststat-boxplots) then illustrates the larger the variability between groups _relative to_ the variability within groups, the stronger the signal.  Quantifying the strength of a signal is then about quantifying the ratio of these two sources of variability.  Let this sink in because it is completely counter-intuitive.  We are saying that in order to determine if there is a difference in the mean response across groups, we have to examine variability.  Further, a signal in data is measured by the variability it produces.  For this reason, comparing a quantitative response across a categorical variable is often referred to as Analysis of Variance (ANOVA).
+
+```{block2, type="rmdkeyidea"}
+Consider the ratio of the variability between groups to the variability within groups.  The larger this ratio, the stronger the evidence of a signal provided by the data.
+```
+
+
+## Forming a Standardized Test Statistic
+As we stated above, quantifying the strength of a signal is equivalent to quantifying the ratio of two sources of variability.  Such ratios are known as __standardized test statistics__.
+
+```{definition, label=defn-standardized-test-statistic, name="Standardized Test Statistic"}
+A ratio of two sources of variability, or a signal-to-noise ratio.  The larger the test statistic, the stronger the evidence of a signal; said another way, the larger the test statistic, the stronger the evidence against the null hypothesis.
+```
+
+Based on our observations above, the standardized test statistic for comparing the mean response across multiple groups has the general form
+\begin{equation}
+  T = \frac{(\text{Between Group Variability})}{(\text{Within Group Variability})}
+  (\#eq:general-test-stat)
+\end{equation}
+
+
+The question we then have before us is the following: how do we measure these sources of variability?  Consider again the hypothesis of interest for the [Oranic Food Case Study](#CaseOrganic):
+
+  > $H_0: \mu_{\text{comfort}} = \mu_{\text{control}} = \mu_{\text{organic}}$  
+  > $H_1:$ At least one $\mu$ differs from the others
+
+In order to form the standardized test statistic, let's again think about what constitutes evidence _against_ the null hypothesis.  The more the means differ from one another, the stronger the evidence.  But, in the previous unit, we had a measure for how different values were from one another --- variance.  That is, the _between-group_ variability can be measured by the variance of the means; we call this the __Mean Square for Treatment (MSTrt)__.
+
+```{definition, label=defn-mstrt, name="Mean Square for Treatment (MSTrt)"}
+This captures the between-group variability in an Analysis of Variance; it is a weighted variance among the sample means from the various groups.  It represents the signal.
+```
+
+Since we do not know the means for each groups (remember, each $\mu$ is a parameter), we assess the between group variability within the sample using the estimates for these parameters --- the sample means.  This is our signal.  The larger this variance, the further apart the means are from one another (agreeing with the alternative hypothesis); the smaller this variance, the closer the means are (agreeing with the null hypothesis).
+
+While the numerator provides some measure of the size of the signal, we need again need to consider how much noise is within the data.  Again, in Figure \@ref(fig:anovateststat-boxplots), the variability between the means is identical for the two datasets; the signal is stronger for Dataset A because this variability is larger _with respect to the noise_.  In order to capture the _within-group_ variability, we pool the variances for each group; this is called the __Mean Square for Error (MSE)__.
+
+```{definition, label=defn-mse, name="Mean Square for Error (MSE)"}
+This captures the within-group variability; it is a pooled estimate of the variance within the groups.  It represents the noise.
+```
+
+Our test statistic in Equation \@ref(eq:general-test-stat) is then refined to
+
+\begin{equation}
+  T = \frac{MSTrt}{MSE}
+  (\#eq:anova-test-stat)
+\end{equation}
+
+
+```{block2, type="rmdtip"}
+Consider testing the hypotheses
+  > $H_0: \mu_1 = \mu_2 = \dotsb = \mu_k$  
+  > $H_1:$ At least one $\mu$ differs from the others
+  
+The standardized test statistic of interest is
+
+$$
+  T = \frac{MSTrt}{MSE}
+$$
+
+
+where 
+
+$$
+\begin{aligned}
+  MSTrt &= \frac{1}{k-1} \sum_{j=1}^{k} n_j \left(\bar{y}_j - \bar{y}\right)^2 \\
+  MSE &= \frac{1}{n-k} \sum_{j=1}^{k} \left(n_j - 1\right) s_j^2
+\end{aligned}
+$$
+
+and $n_j$ represents the sample size for the $j$-th group, $\bar{y}_j$ represents the sample mean for the $j$-th group, $\bar{y}$ represents the overall mean response across all groups, and $s_j^2$ represents the sample variance for the $j$-th group.
+```
+
+We note that while mathematical formulas have been provided to add some clarity to those who think algebraically, our emphasis is _not_ on the computational formulas as much as the idea that we are comparing two sources of variability.
+
+
+## Obtaining a P-value
+Standardized test statistics quantify the strength of a signal, but they do not allow for easy interpretation.  However, with a standardized test statistic, we are able to compute a p-value to quantify how unlikely our particular sample is.  That is, we need to construct the null distribution for the standardized test statistic.  We need to know what type of signal we would expect if the null hypothesis were true.  Conceptually, this is no different than it was in Unit I.  We consider running the study again in a world in which all the groups are the same; for the [Organic Food Case Study](#CaseOrganic), this would involve
+  - Obtaining a new sample of students.
+  - Randomizing each student to one of the three groups at random, all showing the same foods.
+  - Having each student answer a questionnaire regarding moral dilemmas.
+  - Summarize the data by computing a standardized test statistic.
+
+Notice the difference in step 2 above compared to what actually happened in the real study.  In the real study, each group had a different set of foods.  This was to answer the question about whether there is a difference in the groups.  However, in order to construct the _null distribution_, we need to force all groups to be the same.  This could be accomplished by showing every group the same set of foods.  The primary difference in this unit is that the strength of the signal is measured through a standardized test statistic.  After repeating the above steps over and over again, we determine how often the recorded standardized test statistics exceeded the value we obtained in our actual sample. 
+
+Figure \@ref(fig:anovateststat-pvalue) represents the null distribution of the standardized test statistic.  Again, these are values of the standardized test statistic we would expect if there were no relationship between the food categories to which the students were exposed and their moral score.  We are then interested in finding out if the observed dataset is consistent with these expectations.
+
+```{r anovateststat-pvalue, echo=FALSE, fig.cap="Computation of the p-value for the Organic Food Case Study by simulating the null distribution.  The null distribution is based on 5000 replications.", cache=TRUE}
+# Original Model Fit
+fit <- lm(moral_avg ~ Food_Condition, data = organic.df)
+f.stat <- car::Anova(fit)$`F value`[1]
+
+fit.aug <- suppressWarnings(augment(fit))
+
+# Randomization
+set.seed(201708)
+f.boot <- replicate(5000, {
+  # bootstrap under null
+  dat.new <- fit.aug %>%
+    mutate(multiplier = base::sample(c(-(sqrt(5)-1)/2, (sqrt(5)+1)/2),
+                                     size = length(.resid),
+                                     replace = TRUE,
+                                     prob = c((sqrt(5)+1)/(2*sqrt(5)), 
+                                              (sqrt(5)-1)/(2*sqrt(5)))),
+           y.new = 0 + .resid*multiplier)
+  
+  car::Anova(update(fit, y.new ~ ., data = dat.new))$`F value`[1]
+})
+
+p.value <- mean(f.boot >= f.stat)
+
+dens <- density(f.boot)
+plot.dat <- data_frame(
+  x = dens$x,
+  density = dens$y
+)
+
+ggplot(data = plot.dat,
+       mapping = aes(x = x, y = density)) +
+  geom_density(stat = "identity", colour = "black", size = 1.25, fill = "grey75") +
+  labs(x = "Standardized Test Statistic (MSTrt/MSE)", y = "Density") +
+  geom_area(data = filter(plot.dat, x >= f.stat),
+            colour = "black", size = 1.25, fill = "red") +
+  coord_cartesian(xlim = c(0, 6)) +
+  geom_vline(xintercept = f.stat, size = 1.25, colour = "red", linetype = 2) +
+  annotate("label", x = 2.5, y = 0.2, label = str_c("p-value = ", round(p.value, 3))) +
+  theme_bw(12)
+```
+
+Notice that in our data, we observed a standardized test statistic of `r round(f.stat, 2)`; based on the null distribution, we would expect a signal this strong or stronger about `r round(100*p.value, 1)`% of the time _when no signal existed at the population_ (by chance alone).  That is, our data is quite consistent with what we would expect under the null hypothesis.  There is no evidence of a relationship between the type of food a student is exposed to and their moral expectations, on average.
+
+Again, conceptually, this is similar to what we saw in the previous unit.  We are simply determining how likely our data is under the null hypothesis.  However, unlike the previous unit, it may not be clear how we actually model this null distribution.  If we cannot physically redo the study, how can we construct this model?  In order to understand this, we must consider a different model --- that for the data generating process.  This is the topic of the next chapter.

@@ -1,0 +1,7 @@
+"0","ggplot(data = organic.df,"
+"0","       mapping = aes(y = moral_avg, x = Food_Condition)) +"
+"0","  stat_summary(fun.y = ""mean"", geom = ""bar"") +"
+"0","  stat_summary(aes(label=round(..y..,2)), fun.y = ""mean"", geom = ""label"") +"
+"0","  labs(x = ""Food Exposure Group"","
+"0","       y = ""Average Moral Expectation Score"") +"
+"0","  theme_bw(12)"

@@ -128,7 +128,12 @@ The value $q$ such that $k$% of the values in the distribution are less than or 
 The __average__ is also a common measure of location.  The breaking length of a paper specimen is `r round(bl.summaries$Mean, 2)` km, on average.  In this case, the average breaking length and median breaking length are very close; this need not be the case.  The average is not describing the "center" of the data in the same way as the median; they capture different properties.
 
 ```{definition, label=defn-average, name="Average"}
-Also known as the "mean," this measure of location represents the balance point for the distribution.  It is denoted by $\bar{x}$.
+Also known as the "mean," this measure of location represents the balance point for the distribution.  It is denoted by $\bar{x}$.  
+
+For a sample of size $n$, it is computed by
+$$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i$$
+
+where $x_i$ rerpesents the $i$-th value in the sample.
 
 When referencing the average for a population, it can also be called the "Expected Value," and is often denoted by $\mu$.
 ```
@@ -137,6 +142,11 @@ Clearly, the breaking length is not equivalent for all paper specimens; that is,
 
 ```{definition, label=defn-variance, name="Variance"}
 A measure of spread, this roughly captures the average distance values in the distribution are from the mean.
+
+For a sample of size $n$, it is computed by
+$$s^2 = \frac{1}{n-1}\sum_{i=1}^{n} \left(x_i - \bar{x}\right)^2$$
+
+where $\bar{x}$ is the sample mean and $x_i$ is the $i$-th value in the sample.  The division by $n-1$ instead of $n$ reduces the bias in the statistic.
 ```
 
 ```{definition, label=defn-standard-deviation, name="Standard Deviation"}

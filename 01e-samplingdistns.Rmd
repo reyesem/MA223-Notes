@@ -207,9 +207,9 @@ There are three general techniques for modeling the sampling distribution of a s
   3. Build an analytical model appealing to approximations.
   
 We will focus on the first approach; the latter two approaches are discussed in the last unit of the text.  The idea in constructing an empirical model is to mimic the discussion above regarding the construction of a sampling distribution.  Our description references Figure \@ref(fig:samplingdistns-bootstrap) often.  We are limited by our resources; because of time and money constraints, we cannot resample from the population (crossed off resamples).  So, we pretend for a moment that our original sample (colored in green in the figure) is the population for a moment.  Our idea is to randomly sample from this original sample, creating a _bootstrap resample_ (colored in orange in the figure).  Forgive the non-technical terms here, but since the orange "blob" is a random sample from the green "blob," then it is representative of the green blob.  Therefore, if we construct an estimate $\widehat{\theta}^*$ from the orange blob (the star denotes a statistic from a resample), then it should be close to the statistic $\widehat{\theta}$ from the green blob; but, since this green blob is representative of the population, $\widehat{\theta}$ should be close to the true parameter $\theta$.  Therefore, we have that
-$$\begin{equation*}
+$$
 \widehat{\theta}^* \approx \widehat{\theta} \approx \theta \Rightarrow \widehat{\theta}^* \approx \theta
-\end{equation*}$$
+$$
 
 That is, the bootstrap resamples produce statistics which are good estimates of the parameter from the underlying population.  The benefit here is that the bootstrap resamples are constructed in the computer.  And, given today's computing power, we are not limited by time or money (10000 bootstrap resamples can often be taken in a matter of seconds).  If you want to see this process in action, we encourage you to check out the free online app located at <http://www.lock5stat.com/StatKey/bootstrap_1_cat/bootstrap_1_cat.html>.
 

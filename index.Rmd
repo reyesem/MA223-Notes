@@ -20,7 +20,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   comment = "",
   fig.align = "center",
-  fig.path = "./Images/"
+  fig.path = "./Images/",
+  out.width = '80%'
 )
 
 

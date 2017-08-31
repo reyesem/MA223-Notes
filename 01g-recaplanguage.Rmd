@@ -120,15 +120,21 @@ rel.risk <- filter(deepwater.df, Volunteer_Location=="Wildlife Cleanup" & Respir
 
 pval <- mean(deepwater.null.df$Rel_Risk >= rel.risk)
 
+dens <- density(deepwater.null.df$Rel_Risk)
+plot.dat <- data_frame(
+  x = dens$x,
+  density = dens$y
+)
 
-ggplot(data = deepwater.null.df, 
-       mapping = aes(x = Rel_Risk)) +
-  geom_density(colour = "black", size = 1.25, fill = "grey75") +
+
+ggplot(data = plot.dat, 
+       mapping = aes(x = x, y = density)) +
+  geom_density(stat = "identity", colour = "black", size = 1.25, fill = "grey75") +
+  geom_area(data = filter(plot.dat, x >= rel.risk), 
+            colour = "black", size = 1.25, fill = "red") +
   labs(x = "Relative Risk", y = "Density") +
   coord_cartesian(xlim = c(0, 3)) +
-  geom_vline(xintercept = rel.risk, size = 1, colour = "red", linetype = 2) +
-  annotate("segment", x = rel.risk + 0.1, xend = 3, y = 0.75, yend = 0.75,
-           arrow = arrow(ends = "last"), colour = "red") +
+  geom_vline(xintercept = rel.risk, size = 1.25, colour = "red", linetype = 2) +
   annotate("label", x = 2.5, y = 0.75, label = str_c("p-value = ", round(pval, 3))) +
   theme_bw(12)
 ```
