@@ -1,20 +1,13 @@
-"0","# Load necessary packages
-pkgs <- c(
-  ""tidyverse"",
-  ""stringr"",
-  ""broom""
-)
-for(pkg in pkgs) library(pkg, character.only = TRUE)
+"0","source(""./_BootstrapFunctions.R"")
 "
-"2","Loading tidyverse: ggplot2
-Loading tidyverse: tibble
-Loading tidyverse: tidyr
-Loading tidyverse: readr
-Loading tidyverse: purrr
-Loading tidyverse: dplyr
+"2","Loading required package: modelr
 "
-"2","Conflicts with tidy packages ---------------------------------------------------------------------
+"2","
+Attaching package: ‘modelr’
+
 "
-"2","filter(): dplyr, stats
-lag():    dplyr, stats
+"2","The following object is masked from ‘package:broom’:
+
+    bootstrap
+
 "

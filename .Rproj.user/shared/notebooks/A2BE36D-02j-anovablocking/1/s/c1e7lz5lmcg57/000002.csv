@@ -1,0 +1,6 @@
+"0","ggplot(data = golf.df,"
+"0","       mapping = aes(x = Variety, y = Ball_Roll)) +"
+"0","  geom_line(mapping = aes(group = Slope_Group)) +"
+"0","  geom_label(mapping = aes(label = Slope_Group)) +"
+"0","  labs(x = ""Variety of Rye Grass"", y = ""Mean Distance Traveled (m)"") +"
+"0","  theme_bw(12)"

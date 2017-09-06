@@ -1,6 +1,6 @@
 # Framing the Question {#ANOVAquestions}
 
-"Does exposure to various food types lead to different moral expectations?"  The primary question from the [Organic Food Case Study](#CaseOrganic) is primarily about the relationship between two variables: the response (see Definition \@ref(def:defn-response); moral expectations) and the __factor__ of interest (food type).
+"Does exposure to various food types lead to different moral expectations?"  The primary question from the [Organic Food Case Study](#CaseOrganic) is primarily about the relationship between two variables: the response (moral expectations; see Definition \@ref(def:defn-response)) and the __factor__ of interest (food type).
 
 ```{definition, label=defn-factor, name="Factor"}
 Also referred to as the "treamtent," a categorical variable used to explain/predict a response.

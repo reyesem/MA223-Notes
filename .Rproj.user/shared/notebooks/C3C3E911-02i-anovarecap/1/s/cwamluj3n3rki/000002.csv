@@ -1,0 +1,4 @@
+"0","# Full Model"
+"0","organic.gender.fullfit <- lm(moral_avg ~ gender, data = organic.df)"
+"0","# Null Model"
+"0","organic.gender.nullfit <- lm(moral_avg ~ 1, data = organic.df)"

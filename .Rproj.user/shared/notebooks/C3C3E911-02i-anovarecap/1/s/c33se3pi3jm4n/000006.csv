@@ -1,0 +1,8 @@
+"0","set.seed(201709)"
+"0","ggplot(data = filter(organic.df, !is.na(gender)),"
+"0","       mapping = aes(x = gender, y = moral_avg)) +"
+"0","  geom_jitter(alpha = 0.25, width = 0.2, height = 0) +"
+"0","  geom_boxplot(alpha = 0.25, size = 1.1) +"
+"0","  stat_summary(fun.y = mean, geom = ""point"", size = 5, shape = 18) +"
+"0","  labs(x = """", y = ""Moral Expectation Score"") +"
+"0","  theme_bw(12)"

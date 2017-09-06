@@ -1,3 +1,5 @@
+# (PART) Unit III: Modeling the Average Response as a Function of Several Predictors {-}
+
 # Case Study: Seismic Activity in Greece {#CaseGreece}
 
 At the intersection of the African plate, the Eurasia plate, and the smaller Aegean plate, Greece is one of the most earthquake-prone regions in the world.  Between July 2016 and July 2017, Greece experienced 179 earthquakes; by contrast, the state of Texas experienced 28 over the same span of time.  In a region with such seismic activity, careful consideration must be given to municipal construction.  Further, understanding how the motion experienced in a location is related to the soil properties in the area or the magnitude and distance of an earthquake is important.

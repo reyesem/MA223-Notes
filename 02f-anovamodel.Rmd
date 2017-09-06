@@ -122,7 +122,7 @@ Suppose we are conducting a study to compare the speed required to complete a pa
 
 The model for the data generating process would be
 $$
-(\text{Time})_i = \mu_1 \mathbb{I}(\text{i-th task programmed in Python}) + \mu_2 mathbb{I}(\text{i-th task programmed in R}) + \epsilon_i
+(\text{Time})_i = \mu_1 \mathbb{I}(\text{i-th task programmed in Python}) + \mu_2 \mathbb{I}(\text{i-th task programmed in R}) + \epsilon_i
 $$
 
 Given the method in which the data was collected, it would not be reasonable to assume the errors are independent of one another.  Some programmers are naturally faster than others.  A programmer with a below average (negative $\epsilon$) time in Python will most likely have a below average (negative $\epsilon$) time in R on the same task.  Therefore, there is a relationship between the errors for some of the observations taken.  This violates the independence condition.
@@ -160,7 +160,7 @@ Therefore, we can generate data according to this model.  We can replace $\mu$ b
 The difference between the observed response and the predicted response (estimated deterministic portion of the model).  Residuals approximate the noise in the data-generating process.
 ```
 
-The deterministic model gives a way of predicting the response.  For example, consider the [Organic Food Case Study](#CaseOrganic); the data is reproduced in Figure \@ref(anovamodel-organic-boxplot).  Based on the data available, if a subject were to be exposed to organic foods, we would expect their moral expectation score to be `r round(mean(organic.df$moral_avg), 2)`; this is the average observed among individuals randomized to this treatment within our study.
+The deterministic component of the model gives a way of predicting the response.  For example, consider the [Organic Food Case Study](#CaseOrganic); the data is reproduced in Figure \@ref(fig:anovamodel-organic-boxplot).  Based on the data available, if a subject were to be exposed to organic foods, we would expect their moral expectation score to be `r round(mean(organic.df$moral_avg, na.rm=TRUE), 2)`; this is the average observed among individuals randomized to this treatment within our study.
 
 ```{r anovamodel-organic-boxplot, echo=FALSE, fig.cap="Comparison of the moral expectations for college students exposed to different types of food."}
 ggplot(data = organic.df,
@@ -183,7 +183,7 @@ $$
 
 Let's not get lost in the mathematical notation; the residual here is simply the difference between the response of the subject and the average response for their corresponding group.
 
-The key idea here is that residuals approximate the unseen error.  Therefore, if we take this error and perturb it, we can generate new data.  A new dataset, generate under the null hypothesis, can then be constructed as
+The key idea here is that residuals approximate the unseen error.  Therefore, if we take this error and perturb it (the details of which are beyond the scope of this course), we can generate new data.  A new dataset, generate under the null hypothesis, can then be constructed as
 $$
 y_i^* = \bar{y} + e_i^*
 $$

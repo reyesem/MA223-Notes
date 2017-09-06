@@ -1,11 +1,11 @@
 # Study Design {#ANOVAdata}
 
-Chapter \@ref(data) discussed the impact that the design of the study has on interpreting the results.  Recall that the goal of any statistical analysis is to use the sample to say something about the underlying population.  Observational studies are subject to confounding.  In order to use the available data in order to make causal statements that apply within the population, we need to address the confounding.  There are two ways of doing this:
+Chapter \@ref(Data) discussed the impact that the design of the study has on interpreting the results.  Recall that the goal of any statistical analysis is to use the sample to say something about the underlying population.  Observational studies are subject to confounding.  In order to use the available data in order to make causal statements that apply within the population, we need to address the confounding.  There are two ways of doing this:
 
   1. Conduct a controlled experiment.  While we do not limit our discussion to controlled experiments in this unit, our discussion will emphasize the elements of a well designed experiment.
   2. Use observational data and account for confounders.  This will be the emphasis of the discussion in the subsequent unit.
   
-As discussed in Chapter \@ref(data), controlled experiments balance the groups being compared relative to the potential confounders.  As a result, such studies permit causal conclusions to be drawn.
+As discussed in Chapter \@ref(Data), controlled experiments balance the groups being compared relative to the potential confounders.  As a result, such studies permit causal conclusions to be drawn.
 
 
 ## Aspects of a Well Designed Experiment
@@ -81,7 +81,7 @@ Blocking is often a way of gaining additional power when limited resources requi
 
 The extreme case of blocking occurs when you have repeatedly measure the response on the same subject under different treatment conditions.  For example, a pre-test/post-test study is an example of a study which incorporates blocking.  In this case, the blocks are the individual subjects.  The subjects then undergo each of the possible treatment options.  The rationale here is to use every subject as his or her own control.  The treatment groups are then as similar as possible.
 
-We do note that blocking, while a powerful aspect of a design, has an impact on the type of analysis that can be conducted.  Specifically, we must account for the blocking when conducting the analysis.  We will discuss this in Chapter \@ref(anovablocking).
+We do note that blocking, while a powerful aspect of a design, has an impact on the type of analysis that can be conducted.  Specifically, we must account for the blocking when conducting the analysis.  We will discuss this in Chapter \@ref(ANOVAblocking).
 
 ```{r anovadata-organic-data, echo=FALSE, ref.label="caseorganic-data"}
 ```
@@ -90,7 +90,7 @@ How did the design of the [Organic Food Case Study](#CaseOrganic) incorporate th
 
 The study does not make use of blocking.  There are a couple of potential reasons for this; first, with such a large sample size, the researchers may not thought it necessary.  Second, it could be that there was a restriction on timee.  For example, researchers may have considered having students be exposed to each of the three types of food and answering different scenarios after each.  However, this would take a longer amount of time to collect data.  Third, it could be that researchers were not concerned about any identifiable characteristics that would generate additional variability.  Regardless, the study is not worse off because it did not use blocking; the design is still a very reliable design.
 
-While it is clear that random allocation was utilized in the design, random selection was not.  Students participating in the study are those from a particular lecture hall.  As a result, these students were not randomly sampled from all college students (or even from the university student body).  As a result, we must really consider whether the conclusions drawn from this study would apply to all college students within the United States.  Having additional information on their demographics may help determine this, but in general, this is not something that can be definitively answered.  It is an assumption we are either willing to make or not.
+While it is clear that random allocation was utilized in the design, random selection was not.  Students participating in the study are those from a particular lecture hall.  As a result, these students were not randomly sampled from all college students (or even from the university student body).  As a result, we must really consider whether the conclusions drawn from this study would apply to all college students within the United States.  Having additional information on their demographics may help determine this, but in general, this is not something that can be definitively answered.  It is an assumption we are either willing to make or not.  More, notice that the original question was not focused on college students; however, the sample consists only of college students.  This can impact the broader generalization of our results.  It is quite possible that we observe an effect in college students that is not present in the larger population.  We should always be careful to ensure that the sample we are using adequately represents the population.
 
 
 ## Collecting Observational Data

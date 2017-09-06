@@ -131,3 +131,15 @@ Each of the methods presented here are qualitative assessements, which means the
 First, do not spend too much time examining residual plots.  If you stare at a plot too long, you can convince yourself there is pattern in anything.  We are looking for glaring evidence that the data is not consistent with the conditions we have imposed on our model.  This is especially true when we have only a few observations.  In these settings, reading plots can be very difficult.  Again, it is about what you are comfortable assuming; how much faith do you want to place in the results?
 
 Second, we have chosen the language carefully throughout this chapter.  We have never once stated that a condition was satisfied.  When we perform an analysis, we are making an assumption that the conditions are satisfied.  We can never prove that they are; we can only show that the data is consistent with a particular condition.  We can, however, provide evidence that a condition is violated.  When that is the case, we should be wary of trusting the resulting p-values and confidence intervals.  This is not unlike hypothesis testing; just as we can never prove the null hypothesis is true, we cannot prove that a condition is satisfied.
+
+Finally, any conditions required for a particular analysis should be assessed.  If your sample is not consistent with the necessary conditions, you should choose a different analysis.  The inference you obtain from an analysis is only reliable of the data is consistent with any necessary conditions.
+
+```{block2, type="rmdtip"}
+The conditions for a model are placed on the error, but the residuals are used to assess whether a dataset is consistent with these conditions, allowing us to determine if assuming the conditions are satisfied is reasonable.
+
+  1. We can never prove a condition is satisfied.
+  2. The assumptions are not on the residuals, but the errors.
+  3. A sample should be consistent with any conditions you impose on your model.
+  
+If a sample is not consistent with the conditions you impose, you should consider revising your analysis.
+```
