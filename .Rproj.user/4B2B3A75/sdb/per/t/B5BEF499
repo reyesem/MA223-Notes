@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "# Myriad of Potential Questions {#Regquestions}\n\nFor the [Seismic Activity Case Study](#CaseGreece), we are primarily interested in characterizing the relationship between bracketed duration and the magnitude of the earthquake.  First, note that this question is about the relationship between a quantitative response (bracketed duration; see Definition \\@ref(def:defn-response)) and a quantitative predictor (magnitude).  Also note that the question is quite broad.  We might actually have one of the following more specific ideas in mind:\n\n  - In general, does the bracketed duration increase as the magnitude increases?\n  - If two earthquakes with different magnitudes occur in the same location, would we expect the same bracketed duration regardless of their magnitudes?\n  - Is the relationship between the bracketed distance and the magnitude different depending on the soil condition of where the measurement is taken?\n\nThese questions illustrate an array of potential questions we address in this unit.  In fact, each represents a different emphasis that we might have in a research question:\n\n  - Marginal Relationship: overall, do two variables tend to move together (are they correlated)?\n  - Isolation of Effect: does a relationship exist after accounting for the effect of additional variables?  Or, what is the effect \"above and beyond\" the effect of additional variables?\n  - Interplay: how does the relationship between two variables change as a result of a third?\n  \nThere is no right question to ask; each question examines a different facet of the relationship between two quantitative variables.  Throughout this unit, we will introduce a framework which is broad enough for addressing each of these types of questions.  This may sound daunting, but keep in mind that the fundamental ideas we discussed in Units I and II will continue to form the foundation of the analyses introduced in this unit; namely,\n\n  - We are using a sample to say something about the underlying population.\n  - In order to make inference, we will need a model for the sampling (or null) distribution of our statistic.\n  - In order to form a statistic of interest which measures the strength of the signal in the dataset, we think about partitioning variability.\n  \nThe ideas remain the same; the context has changed.  Stating these questions mathematically will require us to build a model for the data-generating process, which we will examine in an upcoming chapter.\n\nThere is one more thing we want to point out before moving on: any relationships we observe are overall trends, not guaranteed to hold for any single individual.  Recall that in Unit II we emphasized that our conclusions were about the mean response within each group (the parameter of interest).  Specifically, even if one treatment is found to be superior _on average_ within the population, due to variability, we do not expect the treatment to necessarily be superior for every individual.  The effect was an overall trend.  This will continue in this unit.  If we observe, for example, that an increase in the magnitude is associated with an increase in the bracketed duration, we are describing an overall trend.  It is highly likely there is some location for which this trend does not hold, simply due to variability.\n",
+    "created" : 1505316572928.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3804821785",
+    "id" : "B5BEF499",
+    "lastKnownWriteTime" : 1505074767,
+    "last_content_update" : 1505074767,
+    "path" : "C:/Users/Administrator/OneDrive - Rose-Hulman Institute of Technology/Courses/MA223-Notes/03b-regquestions.Rmd",
+    "project_path" : "03b-regquestions.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

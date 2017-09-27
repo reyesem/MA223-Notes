@@ -1,0 +1,162 @@
+# Quantifying the Quality of a Model Fit {#Regquality}
+
+In this unit, we have described a very flexible model for describing the data generating process for a quantitative response:
+
+$$(\text{Response})_i = \beta_0 + \sum_{j=1}^{p} \beta_j (\text{Predictor})_{j,i} + \epsilon_i$$
+
+We can obtain estimates of the unknown parameters in this model using least squares.  Further, under certain conditions on the error term, we are able to perform inference on the parameters.  We have not yet discussed how we determine if our model is any good.  As we have seen throughout the text, the idea of partitioning the variability underlies the idea of inference.  Each time we want to perform inference, we are really comparing the variability we have explained to the noise in the data.  In this section, we explore this concept a bit further and use it to derive a measure for the overall performance of our model.
+
+
+## Partitioning Variability
+Consider modeling the bracketed duration as a function of the magnitude and the distance the location is from the center of the earthquake:
+
+$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
+
+We have fit this model previously, and the resulting model fit is summarized below in Table \@ref(tab:regquality-fit).
+
+```{r regquality-fit, echo=FALSE}
+fit.greece.mlr %>%
+  tidy() %>%
+  cbind(confint_tidy(fit.greece.mlr)) %>%
+  mutate(p.value = ifelse(p.value>=0.001, round(p.value, 3), "< 0.001")) %>%
+  select(Term = term,
+         Estimate = estimate,
+         `Standard Error` = std.error,
+         `Lower 95% CI` = conf.low,
+         `Upper 95% CI` = conf.high,
+         `P Value` = p.value) %>%
+  mutate(Term = recode(Term, 
+                       "Epicentral_Distance" = "Epicentral Distance")) %>%
+  knitr::kable(digits = 3,
+               caption = "Summary of the model fit explaining the bracketed duration as a result of magnitude and epicentral distance.")
+```
+
+Each component of a data generating process is explaining a portion of the variability.  That is, this model posits three reasons for why the bracketed duration is not the same at each measured location:
+
+  - The magnitude of the corresponding earthquakes differs.
+  - The locations are located different distances from the epicenter of each earthquake.
+  - Noise which we cannot explain.
+  
+When making inference on a particular component, we compare the variability explained by the component to the variability that is not explained by the model.  As this is a comparison of variabilities, it is summarized in an ANOVA table (Table \@ref(tab:regquality-anova)).  We see from the p-value that there is strong evidence that the epicentral distance is an important component in the model, even after accounting for the effect of the magnitude.  We can interpret this in another way also.  It is saying that the epicentral distance does play a role in explaining a portion of the variability in the bracketed duration.  The same is true for magnitude; there is strong evidence that it plays a role in explaining a portion of the variability in the bracketed duration.
+
+```{r regquality-anova, echo=FALSE}
+fit.greece.mlr %>%
+  anova() %>%
+  tidy() %>%
+  mutate(p.value = ifelse(p.value < 0.001, "< 0.001", round(p.value, 3))) %>%
+  rename(Term = term,
+         DF = df,
+         SS = sumsq,
+         MS = meansq,
+         F = statistic,
+         `P-Value` = p.value) %>%
+  mutate(Term = recode(Term,
+                       "Epicentral_Distance" = "Epicentral Distance",
+                       "Residuals" = "Error")) %>%
+  knitr::kable(digits = 3,
+               caption = "ANOVA table corresponding to the model fit explaining the bracketed duration as a result of magnitude and epicentral distance.")
+```
+
+This begs the question; if we know these variables play a role in explaining the variability, can we quantify the degree to which they explain the variability?  The short answer is yes.
+
+
+## R-squared
+The key to quantifying the quality of a model is to understand that a partition breaks a whole into smaller, distinct components.  This means that if you put the components back together, you have the whole.  The sums of squares are a method of measuring the variability directly with respect to our partition.  That is, the total variability in the bracketed duration is given by
+
+$$
+\begin{aligned}
+  SS_{\text{Total}} &= SS_{\text{Magnitude}} + SS_{\text{Epicentral Distance}} + SS_{\text{Error}} \\
+    &= 980.503 + 317.150 + 2671.787 \\
+    &= 3969.44
+\end{aligned}
+$$
+
+In general this is true, the total variability in the response can be measured by a sum of squares, which is computed by adding up the sums of squares for each individual source of variability.
+
+```{block2, type="rmdtip"}
+The total variability in the response, measured by its sums of squares, is computed by adding up the sums of squares for each source of variability.
+```
+
+This also means we can collapse the ANOVA table into the portion of the variability we can explain (due to the deterministic portion of the model) and the portion of the variability we cannot explain (the stochastic portion of the model).  This reduced table is given by summing up the sums of squares corresponding to the variables in the model.  The mean squares are then derived from the sums of squares, and the standardized test statistic from the mean squares.
+
+```{r regquality-overall-anova, echo=FALSE}
+fit.greece.mlr %>%
+  anova() %>%
+  tidy() %>%
+  select(term, df, sumsq) %>%
+  mutate(Term = ifelse(term=="Residuals", "Error", "Model")) %>%
+  select(-term) %>%
+  group_by(Term) %>%
+  summarise(DF = sum(df),
+            SS = sum(sumsq),
+            MS = SS/DF) %>%
+  ungroup() %>%
+  arrange(desc(Term)) %>%
+  mutate(F = c(MS[1]/MS[2], NA),
+         `P-Value` = 1 - pf(F, df1 = DF[1], df2 = DF[2]),
+         `P-Value` = ifelse(`P-Value`<0.001, "< 0.001", round(`P-Value`, 3))) %>%
+  knitr::kable(digits = 3,
+               caption = "Compact ANOVA table corresponding to the model fit explaining the bracketed duration as a result of magnitude and epicentral distance.  We have condensed the table to have the model represent all individual sources of variability other than the error.")
+```
+
+The benefit to this arrangement is that it makes clear the breakdown between the variability in the response that the model is explaining versus the variability in the response that cannot be explained.  We are now in a position to quantify the amount of variability the model is explaining:
+
+$$\text{Proportion of Variability Explained} = \frac{1297.653}{1297.653+2671.787} = 0.3269$$
+
+This is known as the __R-squared__ for the model.  The R-squared value has a very nice interpretation; in this case, it says that 32.7% of the variability in the bracketed duration at a location is explained by the magnitude of the corresponding earthquake and the location's distance from the epicenter.
+
+```{definition, label=defn-r-squared, name="R Squared"}
+Sometimes reported as a percentage, this measures the proportion of the variability in the response explained by a model.
+```
+
+As R-squared is a proportion, it must take a value between 0 and 1.  If 0, that means our model has no predictive ability within our sample.  Knowing the predictors does not add to our ability to predict the response any more than guessing.  A value of 1 indicates that our model has predicted all the variability in the response; that is, given the predictors, we can perfectly predict the value of the response.
+
+
+## Overfitting
+It may appear that obtaining an R-squared value of 1 should be our goal.  And, in one sense, it is.  We want a model that has strong predictive ability.  However, there is a danger in obtaining an R-squared of 1 as well.  We must remember that variability is inherent in any process.  Therefore, we should never expect to fully explain all of the variability in a response.  George Box (a renowned statistician) once made the following statement [@Box1979]:
+
+  > "Now it would be very remarkable if any system existing in the real world could be exactly represented by any simple model. However, cunningly chosen parsimonious models often do provide remarkably useful approximations. For example, the law $PV = RT$ relating pressure $P$, volume $V$ and temperature $T$ of an 'ideal' gas via a constant $R$ is not exactly true for any real gas, but it frequently provides a useful approximation and furthermore its structure is informative since it springs from a physical view of the behavior of gas molecules.  
+  >  
+  >  For such a model there is no need to ask the question 'Is the model true?'. If 'truth' is to be the 'whole truth' the answer must be 'No.' The only question of interest is 'Is the model illuminating and useful?'.
+
+The idea here is that we know the model will not capture the data generating process precisely.  Therefore, we should be skeptical of models which claim to be perfect.  For, example, consider the two models illustrated in Figure \@ref(fig:regquality-overfit).  The black line has a perfect fit, but we argue the blue line is better.  While the black line captures all the variability in the response for this sample, it is certainly trying to do too much.  In reality, the blue line captures the underlying relationship while not overcomplicating that relationship.  We sacrifice a little quality in the fit for this sample in order to better represent the underlying structure.  The black line suffers from what is known as _overfitting_; the blue line is a more _parsimonious_ model, balancing complexity with model fit.
+
+```{r regquality-overfit, echo=FALSE, fig.cap="Illustration of a parsimonious model compared to one which overfits the data."}
+set.seed(201708)
+plot.dat <- data_frame(
+  x = seq(10),
+  y = 5 + x + rnorm(10)
+)
+
+ggplot(data = plot.dat,
+       mapping = aes(x = x, y = y)) +
+  geom_line(size = 1.1) +
+  geom_point(size = 6) +
+  geom_smooth(method = "lm", se = FALSE, colour = "blue", size = 1.1) +
+  labs(x = "Predictor", y = "Response") +
+  annotate("segment", x = 1.75, xend = 2.4, y = 14, yend = 14, 
+           colour = "black", size = 1.1) +
+  annotate("segment", x = 1.75, xend = 2.4, y = 13, yend = 13,
+           colour = "blue", size = 1.1) +
+  annotate("label", x = 2.5, y = 14, label = "R^2 == 1", 
+           parse = TRUE, hjust = "left") +
+  annotate("label", x = 2.5, y = 13, label = "R^2 == 0.94",
+           parse = TRUE, hjust = "left") +
+  theme_bw(12)
+#  theme(axis.text = element_blank(),
+#        axis.ticks = element_blank()) 
+```
+
+Students often ask, "if not 1, how high of an R-squared represents a _good_ model?"  The answer depends a lot on the discipline.  In many engineering applications within a lab setting, we can control much of the external variability leading to extremely high R-squared values (0.95 to 0.99).  However, in biological applications, the variability among the population can be quite large, leading to much smaller R-squared values (0.3 to 0.6).  What is considered "good" can depend on the specific application.
+
+
+
+## Goal of Modeling
+In addition to the discipline, how you view the R-squared of a model may depend on the goal of the model.  There are generally two broad reasons for developing a statistical model:
+
+  - Explain the relationship between a response and one or more predictors.  This can involve examining the marginal relationship, isolating the effect, or examining the interplay between predictors.
+  - Predict a future response given a specific value for the predictors.  
+  
+If all we are interested in doing is explaining the relationship, we may not be concerned about the predictive ability of the model.  That is, since our goal is not to accurately predict a future response, we are primary concerned with whether we have evidence of a relationship.  But, if our goal is prediction, we would like that estimate to be accurate.  In such cases, a high R-squared is required before really relying on the model we have.
+
+Regardless of our goal, conducting inference or predicting a future response, partitioning the variability is a key step.  If inference is our primary aim, this partitioning allows us to determine a predictor adds to the model above and beyond the remaining terms.  If prediction is our primary aim, the partitioning allows us to quantify the quality of the model.

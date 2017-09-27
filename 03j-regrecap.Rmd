@@ -1,0 +1,167 @@
+# Puting it All Together {#Regrecap}
+
+For the [Seismic Activity Case Study](#CaseGreece), consider the following question:
+
+  > After accounting for the various soil conditions, is there evidence that the protective effect of a location being further away from the epicenter has on the bracketed duration depends upon the magnitude of the earthquake?
+  
+
+## Graphical Summary
+Before developing a statistical model to address our question, we summarize the data graphically.  The question involves three different predictors: magnitude, epicentral distance, and soil conditions.  As a result, we must carefully consider how we visualize the data.  The primary emphasis in the question is on the impact that the magnitude has on the effect of the epicentral distance.  That is, is the relationship of the epicentral distance and bracketed duration similar regardless of the magnitude of the earthquake?
+
+Figure \@ref(fig:regrecap-plot) illustrates the relationship between the bracketed duration and the epicentral distance.  We note that the axis for the epicentral distance takes logarithmic steps to better illustrate the relationship.  That is, moving from 1 to 10 kilometers has roughly the same effect as moving from 10 to 100 kilometers from the earthquake.  Also note that we have displayed the relationship within each of the three soil conditions for the measurement location.  The pattern within each of the soil conditions appears to differ.  Finally, the color of the point indicates the magnitude of the earthquake.  It can be difficult to isolate points of a similar color, but there does appear to be some evidence that the relationship between the bracketed duration and the epicentral distance depends on the magnitude.
+
+```{r regrecap-plot, echo=FALSE, fig.cap="Relationship between the bracketed duration and the distance from the epicenter of an earthquake for locations measuring seismic activity in Greece.  The relationship is presented for various soil types."}
+ggplot(data = greece.df,
+       mapping = aes(x = Epicentral_Distance, y = BD02, colour = Magnitude)) +
+  geom_point(size = 3) +
+  labs(x = "Epicentral Distance (km)", y = "Bracketed Duration (s)",
+       colour = "Magnitude") +
+  scale_x_log10() +
+  scale_color_continuous(breaks = seq(4.5, 6.5, 1)) +
+  theme_bw(12) +
+  theme(legend.position = "bottom") +
+  facet_wrap(~ Soil_Condition)
+```
+
+In order to visualize complex multivariable relationships, we need to make use of multiple graphical elements.
+
+
+## Development of Statistical Model
+In order to address our primary question of interest, we must develop a statistical model which explains the data generating process and embeds our question of interest in terms of the parameters of the model.  Based on the question of interest, our model should incorporate the following elements:
+
+  - Soil condition of the location should be included to account for this effect.
+  - Magntidue of the earthquake should be included.
+  - Distance the location is from the epicenter of the earthquake should be included.
+  - Interaction of the epicentral distance and magnitude should be included; the associated parameter is the key to address our question of interest.
+  
+In addition, based on the graphical exploration of the data in Figure \@ref(fig:regrecap-plot), we should also include the following elements:
+
+  - The relationship between the bracketed duration and the epicentral distance should account be on a logarithmic scale.  This accounts for the "stretched" scale in the above graphic.
+  - The relationship between the epicentral distance and bracketed duration appears to differ for eahc of the three soil conditions; therefore, an interaction term between these variables should be included.
+
+Putting these together, we have the following model:
+
+\begin{equation}
+  \begin{aligned}
+    (\text{Bracketed Duration})_i &= \beta_0 + \beta_1\log_{10}(\text{Epicentral Distance})_i + \beta_2(\text{Magnitude})_i \\
+      &\quad + \beta_3\mathbb{I}(\text{i-th location has Rocky soil}) + \beta_4\mathbb{I}(\text{i-th location has Soft soil}) \\
+      &\quad + \beta_5\log_{10}(\text{Epicentral Distance})_i\mathbb{I}(\text{i-th location has Rocky soil}) \\
+      &\quad + \beta_6\log_{10}(\text{Epicentral Distance})_i\mathbb{I}(\text{i-th location has Soft soil}) \\
+      &\quad + \beta_7\log_{10}(\text{Epicentral Distance})_i(\text{Magnitude})_i + \epsilon_i
+  \end{aligned}
+  (\#eq:regrecap-model)
+\end{equation}
+
+This model is complex, but it captures each of the elements that we described above.  Indicator variables are used to capture the various soil conditions; this includes when constructing interaction terms.  In addition to modeling the deterministic portion of the data generating process, we must also place conditions on the stochastic portion in order to make inference.  We consider the conditions of the classical regression model:
+
+  - The error in the bracketed duration for one location is independent of the error in the bracketed duration for any other location.
+  - The error in the bracketed duration is 0, on average; that is, the model above is correctly specified.
+  - The variability of the error in the bracketed duration is the same for all locations with a similar epicentral distance and magnitude.
+  - The error in the bracketed duration follows a Normal distribution.
+  
+
+## Assessment of Conditions
+Before making inference regarding our question of interest, we should determine if our data is consistent with the conditions on the error term we have specified.  Figure \@ref(fig:regrecap-normality) is a probability plot of the residuals used to assess whether the data is consistent with the assumption of normality.  The plot reveals some departure from the linear relationship we would expect if the residuals were a sample from a Normal distribution.  That is, there is some evidence to suggest that the data is not consistent with the condition of Normality.
+
+(ref:cap-regrecap-normality) Probability plot of the residuals corresponding to a model for the bracketed duration of seismic events in Greece.  The model is described by Equation \@ref(eq:regrecap-model).  
+
+```{r regrecap-normality, echo=FALSE, fig.cap="(ref:capregrecap-normality)"}
+greece.df <- greece.df %>%
+  mutate(log10Distance = log10(Epicentral_Distance))
+
+fit.greece <- lm(BD02 ~ log10Distance + Magnitude + 
+                   Soil_Condition + log10Distance:Soil_Condition +
+                   log10Distance:Magnitude, data = greece.df)
+
+greece.diag <- augment(fit.greece)
+
+ggplot(data = greece.diag,
+       mapping = aes(sample = .resid)) +
+  stat_qq() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_bw(12)
+```
+
+Figure \@ref(fig:regrecap-indep) is a plot of the residuals for the observations in the order in which they were collected.  Since the data was collected over time, this plot could reveal potential patterns among the residuals which are departures from independence.  As there are no trends in either the location or spread of the residuals, the data is consistent with the condition of independence.
+
+(ref:cap-regrecap-indep) Time-series plot of the residuals corresponding to a model for the bracketed duration of seismic events in Greece.  The model is described by Equation \@ref(eq:regrecap-model).
+
+```{r regrecap-indep, echo=FALSE, fig.cap="(ref:cap-regrecap-indep"}
+ggplot(data = greece.diag,
+       mapping = aes(x = seq_along(.resid), y = .resid)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Order of Observation", y = "Residuals") +
+  theme_bw(12)
+```
+
+Figure \@ref(fig:regrecap-mean0) is a plot of the residuals against the predicted values from the model.  While there are some signs of curvature in these residuals, we do not feel the deviation is sufficient enough to warrant believing the model is misspecified.  That is, we are willing to assume the data is consistent with the condition that the mean of the errors is 0 for each combination of the predictors.  However, we cannot ignore the change in the spread as the predicted values increase.  This suggests that for larger bracketed durations, the model is not as precise.
+
+(ref:cap-regrecap-mean0) Plot of the residuals against the predicted values corresponding to a model for the bracketed duration of seismic events in Greece.  The model is described by Equation \@ref(eq:regrecap-model).
+
+```{r regrecap-mean0, echo=FALSE, fig.cap="(ref:cap-regrecap-mean0)"}
+ggplot(data = greece.diag,
+       mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Predicted Values", y = "Residuals") +
+  theme_bw(12)
+```
+
+Examining the residuals, we determined that the data is consistent with the following two conditions:
+
+  - The error in the bracketed duration for one location is independent of the error in the bracketed duration for any other location.
+  - The error in the bracketed duration is 0, on average; that is, the model above is correctly specified.
+  
+There is evidence that the data obtained is not consistent with the remaining two conditions enforced in a classical regression model.  As a result, we choose to model the sampling distribution of our estimates empirically, via bootstrapping.
+
+
+## Summary of Model Fit
+The parameters in our model are estimated via least squares.  The variability in these estimates is quantified using an empirical model of the sampling distribution based on 5000 bootstrap replications.  Table \@ref(tab:regrecap-model-fit) summarizes the estimates for the parameters in Equation \@ref(eq:regrecap-model).
+
+```{r regrecap-bootstrap, echo=FALSE}
+set.seed(201709)
+samp.distn <- boot_model(fit.greece, constant.var = FALSE,
+                         n.boot.reps = 5000)
+
+fit.greece.h0 <- update(fit.greece, 
+                        . ~ . - log10Distance:Magnitude)
+
+null.distn <- boot_model(fit.greece, fit.greece.h0, constant.var = FALSE,
+                         n.boot.reps = 5000)
+```
+
+(ref:cap-regrecap-model-fit) Summary of the model fit to characterize the bracketed duration of seismic events in Greece.  The model is described by Equation \@ref(eq:regrecap-model).
+
+```{r regrecap-model-fit, echo=FALSE}
+p.value <- anova(fit.greece.h0, fit.greece) %>%
+  tidy() %>%
+  "["(2,5) %>%
+  "<="(null.distn$statistic) %>%
+  mean()
+
+samp.distn.summary <- samp.distn %>%
+  group_by(term) %>%
+  summarise(`Standard Error` = sd(estimate),
+            `95% LCL` = quantile(estimate, probs = 0.025),
+            `95% UCL` = quantile(estimate, probs = 0.975))
+
+fit.greece %>%
+  tidy() %>%
+  select(term, estimate) %>%
+  left_join(samp.distn.summary, by = "term") %>%
+  rename(Term = term,
+         Estimate = estimate) %>%
+  mutate(Term = recode(Term,
+                       "(Intercept)" = "Intercept",
+                       "log10Distance" = "Log of Epicentral Distance",
+                       "Soil_ConditionRocky" = "Indicator: Rocky Soil",
+                       "Soil_ConditionSoft" = "Indicator: Soft Soil",
+                       "log10Distance:Soil_ConditionRocky" = "Interaction: Distance and Rocky Soil",
+                       "log10Distance:Soil_ConditionSoft" = "Interaction: Distance and Soft Soil",
+                       "log10Distance:Magnitude" = "Interaction: Distance and Magnitude")) %>%
+  knitr::kable(digits = 3,
+               caption = "(ref:cap-regrecap-model-fit")
+```
+
+The results suggests that for each 1-unit increase in the magnitude of an earthquake, the reduction in the bracketed duration for each 10-fold increase in the number of kilometers a location is from the epicenter of an earthquake is reduced a further `r round(coef(fit.greece)[8], 2)` seconds, on average (95% CI: (0.14, 5.90)).  That is, we have some evidence (p = `r round(p.value, 3)`) that the reduction in the bracketed duration as a location gets further away from the epicenter of an earthquake is magnified as the magnitude of the earthquake increases.  Practically speaking, this means that for larger earthquakes, each kilometer you can distance yourself from the epicenter is important.

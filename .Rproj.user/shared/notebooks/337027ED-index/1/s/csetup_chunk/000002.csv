@@ -1,13 +1,25 @@
-"0","source(""./_BootstrapFunctions.R"")
-"
-"2","Loading required package: modelr
-"
-"2","
-Attaching package: ‘modelr’
-
-"
-"2","The following object is masked from ‘package:broom’:
-
-    bootstrap
-
-"
+"0","# Define default chunk options"
+"0","knitr::opts_chunk$set("
+"0","  error = FALSE,"
+"0","  warning = FALSE,"
+"0","  message = FALSE,"
+"0","  comment = """","
+"0","  fig.align = ""center"","
+"0","  fig.path = ""./Images/"","
+"0","  out.width = '80%'"
+"0",")"
+"0","# Load necessary packages"
+"0","pkgs <- c("
+"0","  ""tidyverse"","
+"0","  ""stringr"","
+"0","  ""broom"""
+"0",")"
+"0","for(pkg in pkgs) library(pkg, character.only = TRUE)"
+"0","# Load bootstrap functions"
+"0","source(""./_BootstrapFunctions.R"")"
+"0","# Additional Options"
+"0","options(knitr.kable.NA = '',"
+"0","        dplyr.show_progress = FALSE)"
+"0","# Automatically create a bib database for R packages"
+"0","knitr::write_bib("
+"0","  c(.packages(), ""bookdown"", ""knitr"", ""rmarkdown""), ""packages.bib"")"

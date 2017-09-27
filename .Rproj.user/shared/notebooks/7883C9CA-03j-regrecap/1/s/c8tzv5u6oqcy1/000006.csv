@@ -1,0 +1,6 @@
+"0","ggplot(data = greece.diag,"
+"0","       mapping = aes(x = .fitted, y = .resid)) +"
+"0","  geom_point() +"
+"0","  geom_smooth() +"
+"0","  labs(x = ""Predicted Values"", y = ""Residuals"") +"
+"0","  theme_bw(12)"

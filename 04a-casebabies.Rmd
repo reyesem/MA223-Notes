@@ -1,0 +1,39 @@
+# (PART) Unit IV: Special Cases {-}
+
+# Case Study: Birth Weights of Babies {#CaseBabies}
+
+The Centers for Disease Control and Prevention (CDC), using data provided by the U.S. Department of Health and Human Services, National Center for Health Statistics, the Division of Vital Statistica and the CDC, maintains a database on all babies born in a given year[^cdclink].  This database contains key metrics on each child born, including the weight of the infant.  Low birthweight can be indicative of poor health or illness in children.  High birthweight can be indicative of obesity later in life.  One use of this database is then for researchers to examine links between lifestyle choices of the parents (such as whether the mother consumed alcohol during pregnancy).  
+
+@Chihara2011 describe a random sample from this database; specifically, the sample consists of 1009 babies born in North Carolina during 2004.  The babies each had a gestation period of at least 37 weeks (full term) and were single births (no twins, triplets, etc.).  For each birth in the sample, we have the following information:
+
+  - Age: Age of the mother (in years).
+  - Tobacco: An indicator of whether the mother used tobacco during the pregnancy.
+  - Alcohol: An indicator of whether the mother used alcohol during the pregnancy.
+  - Gender: Gender of the child.
+  - Weight: Weight of the child at birth (grams).
+  - Gestation: Gestation time (length of pregnancy, weeks).
+  - Smoker: An indicator of whether the mother is a current smoker.
+  
+A subset of the collected data is shown in Table \@ref(tab:casebabies-table).
+
+```{r casebabies-data, echo=FALSE}
+babies.df <- read_csv("./data/case-babies.csv",
+                      col_types = c("icccciic"))
+```
+
+```{r casebabies-table, echo=FALSE}
+babies.df %>%
+  rename(`Subject ID` = ID,
+         `Age Range (years)` = MothersAge,
+         `Used Tobacco` = Tobacco,
+         `Used Alcohol` = Alcohol,
+         `Gender of Baby` = Gender,
+         `Weight of Baby (g)` = Weight,
+         `Gestation (weeks)` = Gestation,
+         `Current Smoker` = Smoker) %>%
+  slice(1:10) %>%
+  knitr::kable(caption = "Subset of a sample of 1009 babies born in North Carlina during 2004.")
+```
+
+
+[^cdclink]: <http://wonder.cdc.gov/natality-current.html>

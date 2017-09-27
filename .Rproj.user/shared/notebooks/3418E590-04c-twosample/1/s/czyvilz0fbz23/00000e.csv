@@ -1,0 +1,8 @@
+"0","set.seed(201709)"
+"0","ggplot(data = babies.df,"
+"0","       mapping = aes(x = Tobacco, y = Weight)) +"
+"0","  geom_boxplot(size = 1.1) +"
+"0","  labs(x = ""Tobacco Use of Mother During Pregnancy"", "
+"0","       y = ""Birthweight of Infant (g)"") +"
+"0","  geom_jitter(height = 0, width = 0.2, alpha = 0.25) +"
+"0","  theme_bw(12)"

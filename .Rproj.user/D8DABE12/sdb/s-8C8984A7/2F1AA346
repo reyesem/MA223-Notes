@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Statistical Foundations for Engineers and Scientists\"\nauthor: \"Eric M Reyes\"\ndate: \"Last Updated: `r Sys.Date()`\"\nsite: bookdown::bookdown_site\ndocumentclass: book\nbibliography: [refs223notes.bib, packages.bib]\nbiblio-style: apalike\nlink-citations: yes\ndescription: \"Course notes for MA223 (Engineering Statistics I) at Rose-Hulman Institute of Technology.\"\n---\n\n# (PART) Unit I: Language and Logic of Inference {-}\n\n```{r setup, include=FALSE}\n# Define default chunk options\nknitr::opts_chunk$set(\n  error = FALSE,\n  warning = FALSE,\n  message = FALSE,\n  comment = \"\",\n  fig.align = \"center\",\n  fig.path = \"./Images/\",\n  out.width = '80%'\n)\n\n\n# Load necessary packages\npkgs <- c(\n  \"tidyverse\",\n  \"stringr\",\n  \"broom\"\n)\nfor(pkg in pkgs) library(pkg, character.only = TRUE)\n\n\n# Load bootstrap functions\nsource(\"./_BootstrapFunctions.R\")\n\n# Additional Options\noptions(knitr.kable.NA = '',\n        dplyr.show_progress = FALSE)\n\n\n# Automatically create a bib database for R packages\nknitr::write_bib(\n  c(.packages(), \"bookdown\", \"knitr\", \"rmarkdown\"), \"packages.bib\")\n```\n",
+    "created" : 1505756052009.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2088261560",
+    "id" : "2F1AA346",
+    "lastKnownWriteTime" : 1504632445,
+    "last_content_update" : 1504632445,
+    "path" : "C:/Users/Administrator/OneDrive - Rose-Hulman Institute of Technology/Courses/MA223-Notes/index.Rmd",
+    "project_path" : "index.Rmd",
+    "properties" : {
+        "last_setup_crc32" : "C401771Cc18d1ae5"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

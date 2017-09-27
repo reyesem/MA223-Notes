@@ -1,0 +1,3 @@
+"0","ci <- t.test(subset(babies.df$Weight, babies.df$Tobacco==""Yes""),"
+"0","             subset(babies.df$Weight, babies.df$Tobacco==""No""),"
+"0","             alternative = ""two.sided"")$conf.int"

@@ -1,0 +1,1 @@
+"0","fit.greece.mlr <- lm(BD02 ~ Magnitude + Epicentral_Distance, data = greece.df)"
