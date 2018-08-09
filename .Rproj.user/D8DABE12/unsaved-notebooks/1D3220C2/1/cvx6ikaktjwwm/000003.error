@@ -1,0 +1,1 @@
+{"frames":[],"message":"Error in summarise_variable(speed ~ 1, data = cars, mean) : \n  could not find function \"summarise_variable\"\n"}

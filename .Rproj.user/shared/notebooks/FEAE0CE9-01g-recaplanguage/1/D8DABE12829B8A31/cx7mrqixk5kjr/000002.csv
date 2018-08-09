@@ -1,0 +1,17 @@
+"0","set.seed(201708)
+deepwater.boot.df <- deepwater.df %>%
+  filter(Respiratory_Symptoms==""Yes"") %>%
+  with({
+    data_frame(
+      Risk_Wildlife = 
+        rbinom(50000, size = 54, 
+               prob = Rel_Frequency[Volunteer_Location==""Wildlife Cleanup""])/54,
+      Risk_Admin =
+        rbinom(50000, size = 103,
+               prob = Rel_Frequency[Volunteer_Location==""No Oil Exposure""])/103,
+      Rel_Risk = Risk_Wildlife/Risk_Admin
+    )
+  })
+"
+"2","Error in eval(lhs, parent, parent) : object 'deepwater.df' not found
+"

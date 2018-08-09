@@ -10,3 +10,6 @@ stringr
 broom
 bindrcpp
 modelr
+MASS
+IntroAnalysis
+forcats

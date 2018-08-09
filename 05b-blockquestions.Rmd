@@ -1,0 +1,31 @@
+# Framing the Question {#Blockquestions}
+
+"Are vendors of yogurt rated differently based on taste?"  As in the previous two units, the primary question in the [Frozen Yogurt Case Study](#CaseYogurt) is about the relationship between two variables: the response (taste of product on scale of 1 to 10; see Definition \@ref(def:defn-response)) and the factor of interest (vendor of yogurt; see Definition \@ref(def:defn-factor)).  
+
+The question we have posed, as stated above, is ill-posed.  Instead of asking about individual tastes, we want to know if, on average, there is a difference in the taste of yogurt between vendors.  That is, we want to test the following hypotheses:
+
+  > $H_0:$ the average taste rating is the same for each of the three vendors.  
+  > $H_1:$ the average taste rating differs for at least one of the three vendors.
+  
+Mathematically, we write
+
+  > $H_0: \mu_{\text{East-Side}} = \mu_{\text{South-Side}} = \mu_{\text{Name-Brand}}$  
+  > $H_1:$ At least one $\mu$ differs from the others
+  
+where each $\mu$ represents the average taste rating for yogurt from the corresponding vendor.  Our question is now centered on the population and captured through parameters, making it a well-posed question.  In fact, thise seems to be a question we have already addressed.  In a way, it is.  
+
+In this unit, we will be tackling the same types of questions we did in Unit IV --- we are comparing the mean of a quantitative response across the levels of a categorical predictor.  The difference is that the observations we have observed are no independent of one another, and we must account for this lack of independence in the analysis.
+
+
+## General Setting
+This unit is concerned with comparing the mean response of a numeric variable across $k$ groups.  Let $\mu_1, \mu_2, \dotsc, \mu_k$ represent the mean response for each of the $k$ groups.  Then, we are primarily interested in the following hypotheses:
+
+  > $H_0: \mu_1 = \mu_2 = \dotsb = \mu_k$  
+  > $H_1:$ At least one $\mu$ differs from the others
+  
+When there are only two groups ($k = 2$), then this can be written as
+
+  > $H_0: \mu_1 = \mu_2$  
+  > $H_1: \mu_1 \neq \mu_2$
+  
+Here we are writing things in the mathematical notation, but let's not forget that every hypothesis has a context.  Throughout this unit, we are looking for some signal in the _location_ of the response across the groups.  Our working assumption then states that the groups are all similar, _on average_.  

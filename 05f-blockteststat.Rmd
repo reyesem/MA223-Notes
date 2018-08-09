@@ -1,0 +1,174 @@
+# Quantifying the Evidence {#Blockteststat}
+
+Recall that at its heart, hypothesis testing is about comparing two models:
+
+  - A more complex model for the data generating process which does not place any constraints on the parameters and
+  - A simpler model for the data generating process which places some constraints on the parameters.
+  
+We have seen throughout the text that the key to hypothesis testing is to partition the variability in the response.  By doing so, we have been able to form a standardized statistic which measures the degree to which the data departs from what we could expect under the simpler model (therefore favoring more complexity).  In this chapter, we present the general framework for making such comparisons which we alluded to in Chapters \@ref(SingleTeststat) and \@ref(Regextensions).
+
+
+## Partitioning Variability
+Consider our model for the [Frozen Yogurt Case Study](#CaseYogurt):
+
+$$
+\begin{aligned}
+  (\text{Taste Rating})_i &= \mu_1 (\text{East Side})_i + \mu_2 (\text{South Side})_i + \mu_3 (\text{Name Brand})_i \\
+    &\qquad + \beta_2 (\text{Subject 2})_i + \beta_3 (\text{Subject 3})_i + \beta_4 (\text{Subject 4})_i \\
+    &\qquad + \beta_5 (\text{Subject 5})_i + \beta_6 (\text{Subject 6})_i + \beta_7 (\text{Subject 7})_i \\
+    &\qquad + \beta_8 (\text{Subject 8})_i + \beta_9 (\text{Subject 9})_i + \epsilon_i
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{East Side})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with east side yogurt vendor} \\
+    0 & \text{if i-th rating not associated with east side yogurt vendor}
+    \end{cases} \\
+  (\text{South Side})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with south side yogurt vendor} \\
+    0 & \text{if i-th rating not associated with south side yogurt vendor}
+    \end{cases} \\
+  (\text{Name Brand})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with name brand yogurt vendor} \\
+    0 & \text{if i-th rating not associated with name brand yogurt vendor}
+    \end{cases} \\
+  (\text{Subject j})_i &= \begin{cases}
+  1 & \text{i-th observation taken from Subject j} \\
+  0 & \text{i-th observation not taken from subject j}
+  \end{cases}
+\end{aligned}
+$$
+
+We are interested in testing the hypotheses
+
+$$H_0: \mu_1 = \mu_2 = \mu_3 \qquad \text{vs.} \qquad H_1: \text{At least one } \mu_j \text{ differs}$$
+
+In previous units, we would have partitioned the variability in the taste ratings as
+
+$$
+\begin{aligned}
+  SS_{\text{Taste Ratings}} &= SS_{\text{Vendors}} + SS_{\text{Error}} \\
+  SST &= SSTrt + SSE
+\end{aligned}
+$$
+
+However, we have added an additional component to the model; we know that there is variability between the subjects (blocks).  Therefore, we add a refinement to our partition:
+
+$$
+\begin{aligned}
+  SS_{\text{Taste Ratings}} &= SS_{\text{Vendors}} + SS_{\text{Subjects}} + SS_{\text{Error}} \\
+  SST &= SSTrt + SSB + SSE
+\end{aligned}
+$$
+
+Here, $SSB$ refers to the "block sum of squares" capturing the variability due to the difference in the response between blocks.  Let's not get lost in the details here; what we want to focus on is that the error sum of squares still captures the "unexplained variability" in the response.  So, the smaller that is, the more the model is explaining.
+
+Now, our goal is to compare two models.  Under the more complex model (in which we allow the average ratings to differ between the vendors), we partition the variability as stated above.  However, under the simpler model (in which we say the average rating is the same for all vendors), our data generating process becomes
+
+$$
+\begin{aligned}
+  (\text{Taste Rating})_i &= \mu + \beta_2 (\text{Subject 2})_i + \beta_3 (\text{Subject 3})_i + \beta_4 (\text{Subject 4})_i \\
+    &\qquad + \beta_5 (\text{Subject 5})_i + \beta_6 (\text{Subject 6})_i + \beta_7 (\text{Subject 7})_i \\
+    &\qquad + \beta_8 (\text{Subject 8})_i + \beta_9 (\text{Subject 9})_i + \epsilon_i
+\end{aligned}
+$$
+
+where $\mu$ is the common mean taste ratings for Subject 1.  The model still has the terms which capture the variability between blocks because even if there is no difference in the vendors, there is still a correlation in the responses from the same subject.  This reduced model simplifies the partition of the variability into
+
+$$SST = SSB + SSE$$
+
+That is, the only reason for variability in the taste ratings is randomness --- the randomness from one subject to another (block effect) and the unexplained variability within a subject (error).  Since the block effect exists in both models, moving from the simple model to the more complex model transfers some of the "error" variability into "treatment" variability.  Therefore, the $SSE$ for the simple model will _always_ be larger than that for the more complex model.  The question is whether the difference is significant enough that we believe there must be a difference between the vendors.
+
+```{block2, type="rmdkeyidea"}
+Comparing the difference in the unexplained variability between two models allows us to assess if the data is inconsistent with the simpler of the two models.
+```
+
+Of course, this is just a signal.  We must examine this difference in light of the noise in the data in order to form a standardized statistic.
+
+
+## Forming a Standardized Test Statistic
+As we have seen in the past two units, a standardized statistic is really a ratio of variability.  That hasn't changed; it is just how we form that variability.  The variability due to the "treatment" comes from subtracting:
+
+$$SSTrt = SSE_{\text{Simple}} - SSE_{\text{Complex}}$$
+
+If we take the variability due to error that we had in the simple model (under the null hypothesis) and subtract out the variability due to error that we had in the complex model (under the alternative hypothesis), that must represent the amount of variability we "transfer" into the treatment.  In order to make this a true variance, we need to divide by an appropriate set of degrees of freedom.
+
+Using the tip described in Chapter \@ref(Regquality) regarding degrees of freedom, we have that the degrees of freedom for the total sum of squares (SST) is $n - 1$ ($n$ unique observations minus a single estimated mean).  The degrees of freedom associated with the treatment sum of squares is $k - 1$ ($k$ averages estimated, one for each group, minus a single overall estimated mean).  The degrees of freedom associated with the block sum of squares is $b - 1$ ($b$ averages estimated, one for each block, minus a single overall estimated mean).  Finally, the degrees of freedom associated with the error sum of squares is $n - k - b + 1$ ($n$ unique observations minus $k$ estimated group means and minus $b - 1$ block means since we do not include an estimate for the first block).  
+
+Therefore, we have that the mean square for treatment is given by
+
+$$MSTrt = \frac{SSTrt}{k - 1} = \frac{SSE_{\text{Simple}} - SSE_{\text{Complex}}}{(n - b) - (n - k - b + 1)}$$
+
+We can use the mean square for error from the more complex model to capture the noise.  Therefore, our standardized statistic becomes
+
+$$T = \frac{MSTrt}{MSE} = \frac{\frac{1}{k-1} SSTrt}{\frac{1}{n-k-b+1} SSE}$$
+
+just as in the ANOVA model.  The difference is that we really think of this as getting the difference in the error sum of squares for two different models.  Further, this process of comparing the simpler model to the more complex model is a very general procedure.
+
+
+```{block2, type="rmdtip"}
+Consider testing the following general hypotheses from a regression model
+  > $H_0:$ Model with restrictions on parameters is sufficient for explaining the response  
+  > $H_1:$ Model without restrictions on parameters is needed for explaining the response
+
+The standardized test statistic of interest is
+
+$$T = \frac{\frac{SSE_{\text{Simple}} - SSE_{\text{Complex}}}{df_{\text{Error Simple}} - df_{\text{Error Complex}}}}{MSE_{\text{Complex}}}
+$$
+
+
+where "Simple" refers to the model under the null hypothesis and "Complex" the model under the alternative, MSE refers to the mean square for error and SSE srefers to the error sum of squares and df to the associated degrees of freedom.
+```
+
+We note that while mathematical formulas have been provided to add some clarity to those who think algebraically, our emphasis is _not_ on the computational formulas as much as the idea that we are comparing two sources of variability.
+
+We can then model the null distribution of this standardized statistic under the conditions we place on the stochastic portion of the model.  This allows us to compute a p-value.
+
+
+
+## ANOVA Table
+We should not lose sight of the fact that our standardized statistic is really a result of partitioning the variability and considering the variability explained by the predictor relative to the noise in the response.  We can summarize this comparison using an ANOVA table.  
+
+Let's consider the [Frozen Yogurt Case Study](#CaseYogurt) data.  We will further suppose that the data is consistent with all classical repeated measures ANOVA conditions.  The results from the corresponding analysis comparing the average taste ratings across the three vendors are given in Table \@ref(tab:blockteststat-yogurt-anova-table).
+
+```{r blockteststat-yogurt-anova-table, echo=FALSE}
+# Compute Analysis
+yogurt.df <- yogurt.df %>%
+  mutate(`Participant ID` = factor(`Participant ID`))
+
+fit.yogurt <- lm(Taste ~ Type + `Participant ID`, data = yogurt.df)
+fit.yogurt.h0 <- lm(Taste ~ `Participant ID`, data = yogurt.df)
+
+yogurt.aov <- anova(fit.yogurt)
+
+yogurt.aov %>%
+  mutate(Source = rownames(.)) %>%
+  rename(DF = Df,
+         SS = `Sum Sq`,
+         MS = `Mean Sq`,
+         F = `F value`,
+         `P-value` = `Pr(>F)`) %>%
+  select(Source, DF, SS, MS, F, `P-value`) %>%
+  mutate(Source = recode(Source,
+                         "Type" = "Vendor",
+                         "`Participant ID`" = "Subject (Block)",
+                         "Residuals" = "Error")) %>%
+  add_row(Source = "Total",
+          DF = sum(.$DF),
+          SS = sum(.$SS)) %>%
+  knitr::kable(digits = 3, caption = "ANOVA table for the Frozen Yogurt Case Study assuming the classical repeated measures ANOVA model.")
+```
+
+As long as the conditions are reasonable, then we can interpret the above p-value.  Based on these results, there is no evidence that the taste ratings differ, on average, across the various yogurt vendors.  That is, while we cannot prove that the average ratings are the same for all vendors, the data is consistent with the three yogurt vendors having the same taste ratings, on average.  This is in line with the idea that consumers were paying a premium for the experience of going to a yogurt-shop; they viewed the product similarly with what could be purchased at a local grocier.  Note that while it is standard for an ANOVA table to provide a p-value for the blocks, we do not examine this p-value; it is rare that we are interested in comparing subjects within the population directly.
+
+The table is a way of summarizing the output from the analysis; the table itself is not very interesting, but we present it because it has the same emphasis we have in this unit --- partitioning variability.  The key to separating a signal from a noise is to partition the variability in the data.  The total variability is partitioned into that resulting from the vendors (the factor), the differences between subjects (the blocks), and the error.  By partitioning this variability, we are able to compute the standardized test statistic and the corresponding p-value.  
+
+
+## Recap
+By partitioning the variability in the response, we are able to construct a standardized statistic for testing the hypothesis of interest.  The model for the null distribution of this statistic depends upon the conditions we are willing to impose on the stochastic portion of the data generating process.  Regardless of the conditions we impose, we can interpret the resulting p-value similarly.  It provides an indication of whether the data suggests that the average response differs for at least one of the groups.
+
+Of course, the interpretation of the p-value depends on the conditions we impose.  We should not choose such conditions without performing some type of assessment to ensure those conditions are reasonable --- that the data is consistent with the conditions.  That is the focus of the next chapter.

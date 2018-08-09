@@ -1,6 +1,0 @@
-"0","ggplot(data = organic.df,"
-"0","       mapping = aes(y = moral_avg, x = Food_Condition)) +"
-"0","  geom_boxplot() +"
-"0","  labs(x = ""Food Exposure Group"","
-"0","       y = ""Moral Expectation Score"") +"
-"0","  theme_bw(12)"

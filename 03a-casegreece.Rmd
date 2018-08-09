@@ -1,4 +1,4 @@
-# (PART) Unit III: Modeling the Average Response as a Function of Several Predictors {-}
+# (PART) Unit III: Modeling the Average Response as a Function of a Continuous Predictor {-}
 
 # Case Study: Seismic Activity in Greece {#CaseGreece}
 
@@ -25,7 +25,7 @@ greece.df <-
                                  `0` = "Soft",
                                  `1` = "Intermediate",
                                  `2` = "Rocky")) %>%
-  select(-SC) %>%
+  dplyr::select(-SC) %>%
   filter((Station_Id%%2)==1)
 ```
 

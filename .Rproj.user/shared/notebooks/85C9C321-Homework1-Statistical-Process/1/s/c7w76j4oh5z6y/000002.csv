@@ -1,0 +1,1 @@
+"0","summarize_variable((Menarche==""Yes"") ~ 1, data = bodyfat, percent)"

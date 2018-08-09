@@ -1,5 +1,0 @@
-"0","ggplot(data = fit.greece.mlr.diag,"
-"0","       mapping = aes(sample = .resid)) +"
-"0","  stat_qq() +"
-"0","  labs(x = ""Theoretical Quantiles"", y = ""Sample Quantiles"") +"
-"0","  theme_bw(12)"

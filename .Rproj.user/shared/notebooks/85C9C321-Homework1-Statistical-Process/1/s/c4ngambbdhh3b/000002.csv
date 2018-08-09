@@ -1,0 +1,4 @@
+"0","summarise_variable(Percent_Fat ~ 1, data = bodyfat, mean, sd)"
+"2","Error in summarise_variable(Percent_Fat ~ 1, data = bodyfat, mean, sd) : 
+  could not find function ""summarise_variable""
+"

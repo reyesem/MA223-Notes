@@ -1,6 +1,6 @@
-# Extending Our Statistical Model {#Regmodel}
+# Building our Statistical Model {#Regmodel}
 
-In Chapter \@ref(#ANOVAmodel) we introduced the statistical modeling framework.  In particular, our general model (see Equation \@ref(eq:general-model)) was given as 
+In Chapter \@ref(#MeanModels) we introduced the statistical modeling framework.  In particular, our general model (see Equation \@ref(eq:general-model)) was given as 
 
 $$\text{Response} = f(\text{variables, parameters}) + \text{noise}$$
 As before, this model has two components:
@@ -15,8 +15,12 @@ Used broadly, this refers to the process of fitting a statistical model to data.
 ```
 
 
-## Statistical Model for A Quantitative Response and Quantitative Predictor(s)
-We believe that models we will talk about are best discussed in the context of the graphics used to visualize them.  Consider the [Seismic Activity Case Study](#CaseGreece).  Let's begin with a broad question:
+## Statistical Model for A Quantitative Response and Quantitative Predictor
+Recall that in Chapter \@ref(MeanModels), we described a general model for the data generating process of a quantitative response:
+
+$$\text{Response} = f(\text{predictor variables, parameters}) + \text{noise}$$
+
+While Chapter \@ref(MeanModels) focused on the function $f(\cdot)$ being a constant, this chapter considers alternative formulations.  We believe these models are best discussed in the context of the graphics used to visualize them.  Consider the [Seismic Activity Case Study](#CaseGreece).  Let's begin with a broad question:
 
   > In general, does the bracketed duration increase as the magnitude increases?
   
@@ -43,154 +47,96 @@ ggplot(data = greece.df,
   theme_bw(12)
 ```
 
-Suppose we feel that this line is a good model for the data generating process.  Before proceeding, consider what this statement says.  We are not trying to say that the relationship explains every response we observe.  Instead, the relationship explains the underlying trend --- what happens on average.  While not perfect, this linear relationship at least appears plausible.  So, our general relationship
-$$(\text{Bracketed Duration}) \sim \text{Magnitude}$$
-
-can then be redefined in part by a deterministic portion which represents a line.  We know from algebra that a line can be expressed as
-$$(\text{Bracketed Duration}) = \beta_0 + \beta_1 (\text{Magnitude})$$
-
-where $\beta_0$ represents the intercept of the line and $\beta_1$ the slope.  Now, observe that very few points in Figure \@ref(fig:regmodel-slr-plot) actually fall on the line, which is to be expected.  This emphasizes the idea that the deterministic portion of the model is not meant to fully capture a data generating process since variability is inherent in any process.  This is why statistical models embed a deterministic component alongside a stochastic component --- to capture the variability due to error or noise in the data generating process.  Therefore, we develop the following model:
+Suppose we feel that this line is a good model for the data generating process.  Before proceeding, consider what this statement says.  We are not trying to say that the relationship explains every response we observe.  Instead, the relationship explains the underlying trend --- what happens on average.  While not perfect, this linear relationship at least appears plausible.  Therefore, we replace $f(\cdot)$ in the general form of a data generating process with a simple line, which we express as
 
 \begin{equation}
   (\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i
   (\#eq:regmodel-slr)
 \end{equation}
 
-The model suggests that the bracketed duration at a location is primarily determined by the magnitude of the correpsonding event; however, there is a component we cannot explain.  That is, the model does not explain why, for example, when an earthquake with a magnitude of 5.5 hits, not all locations have the same bracketed duration.  This noise is picked up by the $\epsilon_i$ term in the model (as illustrated in red on Figure \@ref(fig:regmodel-slr-plot)).  It essentially says that the bracketed duration for these locations are simply scattered vertically about the line.  As we saw in the previous unit, we would generally refine this model further by placing additional conditions on the noise term.  
+where $\beta_0$ represents the intercept of the line and $\beta_1$ the slope.  Now, observe that very few points in Figure \@ref(fig:regmodel-slr-plot) actually fall on the line, which is to be expected.  This emphasizes the idea that the deterministic portion of the model is not meant to fully capture a data generating process since variability is inherent in any process.  This is why statistical models embed a deterministic component alongside a stochastic component --- to capture the variability due to error or noise in the data generating process.  
 
+The model suggests that the bracketed duration at a location is primarily determined by the magnitude of the correpsonding event; however, there is a component we cannot explain.  That is, the model does not explain why, for example, when an earthquake with a magnitude of 5.5 hits, all locations do not have the same bracketed duration.  This noise is picked up by the $\epsilon_i$ term in the model (as illustrated in red on Figure \@ref(fig:regmodel-slr-plot)).  The model essentially says that the bracketed duration for a specific magnitude are simply scattered vertically about the line.  As we saw in Chapter \@ref(MeanModels), we refine this model further by placing additional conditions on the noise term in order to aid in conducting inference.
 
-### Including Multiple Precitors
-The real power of the model in Equation \@ref(eq:general-model) is our ability to generalize it to encompass multiple predictors.  That is, suppose we refine the our question about the marginal relationship above to one isolating the effect of the magnitude on the bracketed duration:
+```{block2, type="rmdtip"}
+For a quantitative response and quantitative predictor, the general form of a simple linear regression model is then
 
-  > If two earthquakes with different magnitudes occur in the same location, would we expect the same bracketed duration regardless of their magnitudes?
+$$(\text{Response})_i = \beta_0 + \beta_1(\text{Predictor})_i + \epsilon_i$$
   
-This particular questions begs a model which has multiple predictors.  What bracketed duration would we expect given the magnitude and epicentral distance (to capture earthquakes occurring in the same location)?  We extend the model in Equation \@ref(eq:regmodel-slr) to include an additional predictor:
-
-\begin{equation}
-  (\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i
-  (\#eq:regmodel-mlr)
-\end{equation}
-
-This more complex model is more difficult to visualize, but conceptually works similar to the previous model.  Given a value for the magnitude and epicentral distance, we can predict the bracketed duration; our model accounts for the fact that these two variables together will not explain the entire data generating process.  There will still be unexplained variability.  One way of envisioning what this model does is to think about taking the linear relationship we previously had and observing that we are now saying that this model differs for each group of observations which have a different epicentral distance.  For example, consider all locations which were located 10 km away from the center of an earthquake, then we would have that Equation \@ref(eq:regmodel-mlr) becomes
-$$
-\begin{aligned}
-(\text{Bracketed Duration})_i &= \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(10) + \epsilon_i \\
-  &= \left(\beta_0 + 10\beta_2\right) + \beta_1(\text{Magnitude})_i + \epsilon_i
-\end{aligned}
-$$
-
-Similarly, if we only consider locations which were located 32 km away from the center of an earthquake, then Equation \@ref(eq:regmodel-mlr) becomes
-
-$$
-\begin{aligned}
-(\text{Bracketed Duration})_i &= \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(32) + \epsilon_i \\
-  &= \left(\beta_0 + 32\beta_2\right) + \beta_1(\text{Magnitude})_i + \epsilon_i
-\end{aligned}
-$$
-
-Figure \@ref(fig:regmodel-mlr-plot) represents this graphically for a range of potential epicentral distances.  Essentially, the relationship between the bracketed duration and the magnitude shifts depending on the epicentral distances.  The overall trend is similar (the lines are parallel), but where the line is located is really dependent upon the distance of the location from the earthquake.
-
-```{r regmodel-mlr-plot, echo=FALSE, fig.cap="Relationship between bracketed duration and the magnitude of an earthquake after also considering the epicentral distance from an earthquake.  Lines for relationship after considering the epicentral distance are overlayed."}
-fit.greece.mlr <- lm(BD02 ~ Magnitude + Epicentral_Distance, data = greece.df)
-
-add.on <- data_frame(
-  Epicentral_Distance = seq(0, 75, 25),
-  Slope = coef(fit.greece.mlr)[2],
-  Intercept = coef(fit.greece.mlr)[1] + 
-    Epicentral_Distance*coef(fit.greece.mlr)[3]
-) %>%
-  mutate(Epicentral_Distance = factor(Epicentral_Distance))
-
-ggplot(data = greece.df,
-       mapping = aes(x = Magnitude, y = BD02)) +
-  geom_point() +
-  geom_abline(data = add.on,
-              mapping = aes(intercept = Intercept,
-                            slope = Slope,
-                            colour = Epicentral_Distance),
-              size = 1.1) +
-  labs(x = "Moment Magnitude of the Earthquake",
-       y = "Bracketed Duration (s) at Measurement Location",
-       colour = "Epicentral Distance") + 
-  theme_bw(12) +
-  theme(legend.position = "bottom")
 ```
 
-This model has what may appear as an obvious requirement; you cannot use this model to predict the bracketed duration without specifying _both_ the magnitude of the earthquake and the epicentral distance of the location.  However, it also isolates effect of the magnitude above and beyond the epicentral distance.  We represent the above model as
-$$(\text{Bracketed Duration}) \sim \text{Magnitude} + (\text{Epicentral Distance})$$
 
 
-### Including Categorical Predictors
-Equation \@ref(eq:regmodel-mlr) broadens our model to include multiple quantitative predictors.  It leaves open the issue of how we include predictors which are categorical in nature.  For example, suppose we would like to have a model of the form
-$$(\text{Bracketed Duration}) \sim \text{Magnitude} + (\text{Soil Conditions})$$
+## Using a Categorical Predictor
+We have described the simple linear model in this chapter as one which relates two quantitative variables.  However, this framework can be extended to make use of a categorical predictor.  For example, we saw in Chapter \@ref(Regsummaries) that the bracketed duration for locations with rocky soils could differ from that of locations with other types of soil.  How do we include whether a location has rocky soil or not when this is a categorical variable?  The key is to construct an __indicator variable__.
 
-How do we handle a variable like soil conditions, which has values such as "Soft," "Intermediate," or "Rocky?"  We actually have already seen a way to approach this in the previous unit.  We construct what are known as __indicator variables__.  Specifically, we consider the following model
+```{definition, label=defn-indicator-variable, name="Indicator Variable"}
+A binary variable (one which takes on a value of 0 or 1) used to represent whether the value for a categorical variable for an observation takes a particular value.
+```
+
+Indicator variables essentially create a numeric variable which represents a yes/no decision regarding a categorical variable.  For example, consider the following variable definition:
+
+$$
+(\text{Rocky Soil})_i = \begin{cases} 1 & \text{if } i\text{-th location has rocky soil} \\
+0 & \text{if } i\text{-th location has a different soil type} \end{cases}
+$$
+
+We can then use this variable in our model for the data generating process.  Specifically, consider the following model
 
 \begin{equation}
-  \begin{aligned}
-    (\text{Bracketed Duration})_i &= \beta_0 + \beta_1(\text{Magnitude})_i \\
-      &\quad + \beta_2\mathbb{I}(\text{i-th observation has a Rocky soil}) \\
-      &\quad + \beta_3\mathbb{I}(\text{i-th observation has Soft soil}) + \epsilon_i
-  \end{aligned}
+  (\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Rocky Soil})_i + \epsilon_i  
   (\#eq:regmodel-ind)
 \end{equation}
 
-You may at first ask "where is the indicator for Intermediate soil?"  This is totally a reasonable question.  The idea is that each indicator variable acts as a "light switch."  A variable turns on when an observation falls into a particular group and turns off otherwise.  So, if you have a location which has "Intermediate" soil conditions, then that location cannot have "Soft" or "Rocky" soil, turning those indicators off; therefore, it is picked up by the intercept term in the model.  As a general rule, if there are $k$ levels in a categorical variable, it required $k-1$ indicator variables.
+You may at first feel the need to have another indicator that takes the value 1 when the soil is not rocky.  But, this is not necessary.  Think of an indicator variable like a "light switch."  The indicator variable turns on when an observation falls into a particular group and turns off otherwise.  So, if you have a location which has "Intermediate" soil conditions, then that location cannot have "Rocky" soil, turning the indicator off.  Setting the indicator to 0 (turning it "off") then leaves only the intercept in the model.  So, the group which has a 0 for the indicator is encoded in the intercept; this is known as the __reference group__. 
 
-```{definition, label=defn-indicator-variable, name="Indicator Variables"}
-A collection of binary variables (variables which take on a value of 0 or 1) used to represent the levels of a single categorical variable.
+```{definition, label=defn-reference-group, name="Reference Group"}
+The group defined by setting all indicator variables in a model to 0.
 ```
 
-The collection of indicators essentially creates multiple models, just as we saw in Figure \@ref(fig:regmodel-mlr-plot), with the exception that we know that only $k$ models are possible (one for each level of the categorical predictor).  For the model in Equation \@ref(eq:regmodel-ind), we have three individual equations that can be generated:
+The indicator variable essentially creates two mean responses, one for each value of the indicator.For the model in Equation \@ref(eq:regmodel-ind), we have the following:
 
 $$
 \begin{aligned}
-  \text{Intermediate Soil:} &\quad (\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i\\
-  \text{Rocky Soil:} &\quad (\text{Bracketed Duration})_i = \beta_0 + \beta_2 + \beta_1(\text{Magnitude})_i + \epsilon_i\\
-  \text{Soft Soil:} &\quad (\text{Bracketed Duration})_i = \beta_0 + \beta_3 + \beta_1(\text{Magnitude})_i + \epsilon_i
+  \text{Rocky Soil:} &\quad (\text{Bracketed Duration})_i = \beta_0 + \beta_1 + \epsilon_i\\
+  \text{Intermediate/Soft Soil:} &\quad (\text{Bracketed Duration})_i = \beta_0 + \epsilon_i
 \end{aligned}
 $$
 
-Therefore, what happens is that the intercept of the line is shifted.  This is illustrated in Figure \@ref(fig:regmodel-ind-plot).  The figure shows three lines, one for each soil type.  The lines are parallel, but shifted due to the effect that each soil type has.  Note that each line is not shifted by the same amount; this suggests that some soil conditions behave more similarly than other conditions.  In particular, the rocky soil tends to result in less bracketed shift for any particular magnitude compared to the other two types of soil conditions.
+So, the "slope" $\beta_1$ is really capturing the shift in the deterministic portion of the model from one group to the other.  This is illustrated in Figure \@ref(fig:regmodel-ind-plot).  The "line" is really connecting the location of the two groups.  
 
-```{r regmodel-ind-plot, echo=FALSE, fig.cap="Relationship between bracketed duration and the magnitude of an earthquake after also considering the soil conditions of the measurement location.  Lines for relationship for locations of each soil type are overlayed."}
-fit.greece.ind <- lm(BD02 ~ Magnitude + Soil_Condition, data = greece.df)
+```{r regmodel-ind-plot, echo=FALSE, fig.cap="Comparison of the bracketed duration between locations with rocky soil and those with other soil types."}
+greece.df <- greece.df %>%
+  mutate(Rocky.Soil = (Soil_Condition=="Rocky"))
 
-add.on <- expand.grid(
-  Soil_Condition = unique(greece.df$Soil_Condition),
-  Magnitude = unique(greece.df$Magnitude)
-) %>%
-  mutate(BD02 = predict(object = fit.greece.ind, newdata = .)) %>%
-  arrange(Soil_Condition, Magnitude)
+add.on <- greece.df %>%
+  group_by(Rocky.Soil) %>%
+  summarise(Mean = mean(BD02, na.rm=TRUE))
 
 ggplot(data = greece.df,
-       mapping = aes(x = Magnitude, y = BD02, colour = Soil_Condition)) +
-  geom_point() +
-  geom_line(data = add.on, 
-            mapping = aes(x = Magnitude, y = BD02, colour = Soil_Condition),
-            size = 1.1) +
-  labs(x = "Moment Magnitude of the Earthquake",
-       y = "Bracketed Duration (s) at Measurement Location",
-       colour = "Soil Conditions") + 
-  theme_bw(12) +
-  theme(legend.position = "bottom")
+       mapping = aes(y = BD02, x = Rocky.Soil)) +
+  geom_boxplot() +
+  geom_point(data = add.on,
+             mapping = aes(x = Rocky.Soil, y = Mean),
+             size = 4, shape = 18) +
+  annotate("segment", x = add.on$Rocky.Soil[1], xend = add.on$Rocky.Soil[2],
+           y = add.on$Mean[1], yend = add.on$Mean[2], size = 1.1, 
+           color = "blue") +
+  labs(x = "",
+       y = "Bracketed Duration (s) at Measurement Location") + 
+  scale_x_discrete(breaks = c(FALSE, TRUE), 
+                   labels = c("Other Soil", "Rocky Soil")) +
+  theme_bw(12)
 ```
 
 
-### General Model Formulation
-In our discussion thus far, we have considered models which described the data generating process as a function of one or two predictors.  However, there is nothing to limit us here from the inclusion of several predictors.  Each categorical predictor is turned into a collection of indicator variables, and each quantitative predictor is simply added to the model.  That is, a model which predicts a quantitative response as a function of $p$ predictors, which we can describe as 
-$$\text{Response} \sim \text{Predictor}_1 + \text{Predictor}_2 + \dotsb + \text{Predictor}_p$$
-
-has the mathematical form
-$$(\text{Response})_i = \beta_0 + \sum_{j=1}^{p} \beta_j (\text{Predictor})_{j,i} + \epsilon_i$$
-
-The problem, of course, is that the parameters (the $\beta$'s in the model) are unknown.  While the plots above illustrated how the models work conceptually, we have not yet discussed how they are actually created since the intercept and slope(s) are actually unknown.  This is where we now turn our attention.
-
 
 ## Estimating the Parameters
-Recall the goal of statistics --- to use a sample to say something about the underlying population.  This seemed natural when we were talking about estimating the mean of a population; it is intuitive to then compute the mean in the sample as an estimate.  In this case, however, we have this model for the data generating process.  Our goal is to somehow use the data to make some conclusions about what value that parameter takes.  That process begins by computing an estimate for those parameters.
+Recall the goal of statistics --- to use a sample to say something about the underlying population.  There is something intuitive about using the sample mean as an estimate of the population mean; however, now we have a model with both a slope and an intercept and we want to use the data to say something about these parameters.  That process begins by computing an estimate for each of those parameters.
 
-Think about what we would like to do.  We believe there is a linear relationship which generated the data, and we want to use the data to estimate what that relationship looks like.  We want to draw a line through the points that gives the "best fit."  Figure \@ref(fig:regmodel-least-squares) illustrates for a hypothetical dataset.  Something inside us knows that the blue line is preferred to the orange line.  The orange line does not seem to represent the pattern in the data because it leaves the cloud of points.  We want a line that goes through the points.  Trying to formalize this, we are saying we want a line that is somehow simultaneously as close to all the data as possible.
+Before describing how such estimates are constructed, let us revisit the model in Equation \@ref(eq:regmodel-slr).  In this equation, both $\beta_0$ and $\beta_1$ are parameters and are therefore unknown values, and they will always be unknown.  We can use available data to estimate these parameters with confidence (confidence intervals) or determine if there is evidence they are outside of a specific region (hypothesis testing), but we will never be able to definitively state the value of these parameters.  As scientists and engineers, many are undoubtedly familiar with a line of "best fit."  We need to keep in mind that any such line is simply an _estimate_; no analysis can actually provide the exact values of $\beta_0$ and $\beta_1$.  But, how are such estimates constructed?
+
+Think about what we would like to do.  We believe there is a linear relationship which generated the data, and we want to use the data to estimate what that relationship looks like.  We want to draw a line through the points that gives the "best fit."  Figure \@ref(fig:regmodel-least-squares) illustrates this for a hypothetical dataset; it compares two _estimated relationships_.  We note that these are just estimates; neither represents the actual line from which the data was generated.  Something inside us knows that the blue line is preferred to the orange line.  The orange line does not seem to represent the pattern in the data because it leaves the cloud of points.  We want a line that goes through the points.  Trying to formalize this, we are saying we want a line that is somehow simultaneously as close to all the data as possible.
 
 ```{r regmodel-least-squares, echo=FALSE, fig.cap="Illustration of two competing estimates of a line which runs through the data."}
 knitr::include_graphics("./images/RegModel-LeastSquares.jpg")
@@ -199,70 +145,13 @@ knitr::include_graphics("./images/RegModel-LeastSquares.jpg")
 The most widely used method for estimating the parameters is known as "the method of least squares."  For this reason, the estimates are often referred to as the __least squares estimates__.  This method essentially minimizes the amount of error (as measured by the vertical distance a point is from the line) within the dataset.
 
 ```{definition, label=defn-least-squares-estimates, name="Least Squares Estimates"}
-Often called the "best fit line," these are the estimates of the parameters in a regression model chosen to minimize the such of squared errors.  Formally, they are the values of $\beta_0, \beta_1, \dotsc, \beta_p$ such that 
-$$\sum_{i=1}^n \left((\text{Response})_i - \beta_0 - \sum_{j=1}^p \beta_j(\text{Predictor})_{j,i}\right)^2$$
+Often called the "best fit line," these are the estimates of the parameters in a regression model chosen to minimize the sum of squared errors.  Formally, they are the values of $\beta_0$ and $\beta_1$ which minimize the quantity 
 
-is minimized.  These estimates are often denoted $\widehat{\beta}_0, \widehat{\beta}_1, \dotsc, \widehat{\beta}_p$.
+$$\sum_{i=1}^n \left((\text{Response})_i - \beta_0 - \beta_1(\text{Predictor})_{i}\right)^2$$
+
+These estimates are often denoted $\widehat{\beta}_0, \widehat{\beta}_1$.
 ```
 
 This estimation is carried out using statistical software.
 
-Estimation is often associated with statistics.  However, the least squares estimates are actually the result of a mathematical minimization process.  The real statistics comes in when we move back into one of our components of the _Distributional Quartet_.  In particular, the estimates are only useful if we can quantify the variability in those estimates.  In order to construct a model for the sampling distribution of these statistics, we construct place additional conditions on the stochastic portion of the model.  That is the focus of the next chapter.
-
-
-## Embedding Our Questions into a Statistical Framework
-Our first fundamental idea centers on the idea that the majority of research questions can be framed in terms of a parameter within the population.  We now take a moment to show that modeling the data generating process allows us to frame our research questions in terms of the parameters of this model.  Consider the following question:
-
-  > In general, does the bracketed duration increase as the magnitude increases?
-  
-Let's consider how we might write this in terms of a null and alternative hypotheses.  
-
-  > $H_0:$ the bracketed duration does not change, on average, as the magnitude increases.  
-  > $H_1:$ the bracketed duration is linearly related with the magnitude; that is, as the magnitude increases, the bracketed duration tends to increase or decrease.
-  
-In order to address this question, we considered the following model for the data generating process:
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
-
-If the null hypothesis above is true, then that suggests that the bracketed duration is flat, regardless of the value of the magnitude (at least, on average).  What would be true about the parameters if that were true?  A flat line is one without a slope; said another way, we need a model for which changing the value of the magnitude does not affect the resulting bracketed duration.  In order to accomplish this, we simply drop it out of the model:
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \epsilon_i$$
-
-Without the magnitude in the model, it has no effect on the bracketed duration.  Therefore, our null and alternative hypotheses above can be reframed as
-
-  > $H_0: \beta_1 = 0$  
-  > $H_1: \beta_1 \neq 0$
-  
-where $\beta_1$ is the parameter linearly relating the bracketed duration to the magnitude.  That is, if the paramter associated with magnitude is 0, then it is plays no role in the data generating process; if it is anything other than 0, then magnitude has a role within the data generating process.
-
-So, we can frame questions about the marginal relationship between two variables within a simple model.  What about more complex questions, such as
-
-  > If two earthquakes with different magnitudes occur in the same location, would we expect the same bracketed duration regardless of their magnitudes?
-  
-This question looks to isolate the effect of the magnitude after taking into account the distance the location is from the center of the earthquake.  That is, for two locations which are a similar distance, does the magnitude still play a role.  Above, we considered the following model for the data generating process:
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
-
-Within the context of this model, consider the hypotheses
-
-  > $H_0: \beta_1 = 0$  
-  > $H_1: \beta_1 \neq 0$
-  
-What does such a hypothesis imply?  Well, under the null hypothesis (pluggint 0 in for $\beta_1$) the model reduces to
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
-
-which still allows the bracketed duration to rely on the distance the location is from the earthquake; however, after accounting for this predictor, magnitude no longer plays a role.  The alternative hypothesis then captures the idea that even after you have the distance from the center of the earthquake in the model, the magnitude is still required for predicting the bracketed duration.  That is, our hypotheses have become
-
-  > $H_0:$ After accounting for the epicentral distance, magnitude has no linear relationship with the bracketed duration.  
-  > $H_1:$ After accounting for the epicentral distance, magnitude has a linear relationship with the bracketed duration.
-  
-Again, "linear relationship" means that as one variable increases, the other tends to increase (or decrease) as well.
-
-```{block2, type="rmdkeyidea"}
-Setting a parameter to 0 in the model for a data generating process is often associated with saying that the corresponding variable is not associated with the response in a linear fashion --- that it does not belong in the model.
-```
-
-
-## Recap
-Trying to summarize what we have done, it is helpful to think backward.  If we are to address our questions of interest, we must frame them in terms of a parameter which characterizes the population.  These parameters actually govern the data generating process.  Modeling this process then allows us to say something about those underlying parameters.  In order to do that, we must estimate these parameters from the data.  We now turn to incorporating the variability in these estimates through conditions on the stochastic portion of the model.
+Estimation is often associated with statistics.  However, the least squares estimates are actually the result of a mathematical minimization process.  The real statistical aspect comes in when we move back into one of our components of the _Distributional Quartet_.  In particular, the estimates are only useful if we can quantify the variability in those estimates.  In order to construct a model for the sampling distribution of these statistics, we place additional conditions on the stochastic portion of the model.  That is the focus of the next chapter.

@@ -1,0 +1,239 @@
+# Building the Statistical Model {#ANOVAmodel}
+
+In Chapter \@ref(MeanModels) we introduced the statistical modeling framework.  In particular, our general model (see Equation \@ref(eq:general-model)) was given as 
+
+$$\text{Response} = f(\text{variables, parameters}) + \text{noise}$$
+
+As before, this model has two components:
+
+  - A deterministic component which takes the form of a function of variables and unknown parameters.  It is often this component on which we would like to make inference.
+  - A stochastic component which captures the unexplained variability in the data generating process.
+
+In the previous unit, we began to explore how the capabilities of such a model.  In this chapter, we now discuss how to choose the function $f(\cdot)$ so that we can compare a quantitative response across the levels of a factor (our predictor).
+
+
+
+## Statistical Model for A Quantitative Response and a Categorical Predictor
+For the [Organic Food Case Study](#CaseOrganic), we are comparing the moral expectations (quantitative response) for different food exposures (levels of a categorical variable).  Our model for the data-generating process is best understood in light of the graphic we used to display the data (see Figure \@ref(fig:anovamodel-organic-plot)).
+
+```{r anovamodel-organic-data, echo=FALSE, ref.label="caseorganic-data"}
+```
+
+```{r anovamodel-organic-plot, echo=FALSE, fig.cap="Moral expectation scores for students following exposure to various food types."}
+min.organic.df <- organic.df %>%
+  filter(Food_Condition=="organic") %>%
+  summarise(moral_avg = min(moral_avg),
+            Food_Condition = Food_Condition[1])
+
+set.seed(123)
+ggplot(data = organic.df,
+       mapping = aes(y = moral_avg, x = Food_Condition)) +
+  geom_jitter(height = 0, width=0.2, alpha = 0.75, colour = "grey75") +
+  geom_boxplot(alpha = 0.5, size = 0.75) +
+  geom_point(data = min.organic.df, colour = "red") +
+  geom_label(data = min.organic.df, 
+             mapping = aes(label = round(moral_avg, 2)), 
+             colour = "red",
+             nudge_y = 0.2, nudge_x = 0.1) +
+  stat_summary(fun.y = "mean", geom = "point", size = 4, shape = 17) +
+  labs(x = "Food Exposure Group", y = "Moral Expectation Score") +
+  theme_bw(12)
+```
+
+Let's consider how the value `r round(min.organic.df$moral_avg, 2)`, highlighted red in Figure \@ref(fig:anovamodel-organic-plot), was generated.  As discussed previously, there are two sources of variability in the moral expectation scores (two reasons that the values are not all the same).  One source is the fact that different subjects had different exposures.  That is, one reason the value `r round(min.organic.df$moral_avg, 2)` differs from others observed is because this subject belongs to the organic group and not the comfort or control exposure groups.  We might initially consider something like the simple linear model discussed in Chapter \@ref(Regmodel) 
+
+$$(\text{Moral Expectation Score})_i = \beta_0 + \beta_1 (\text{Food Exposure Group})_i + \epsilon_i$$
+
+However, the food exposure group is not a quantitative predictor.  The solution is to use indicator variables (see Definition \@ref(def:defn-indicator-variable)) to capture this categorical predictor.  It turns out this is somewhat natural if we think of the function $f(\cdot)$ as a piecewise function:
+
+$$
+f\left((\text{Food Exposure Group})_i\right) = \begin{cases}
+  \mu_1 & \text{if i-th subject exposed to organic foods} \\
+  \mu_2 & \text{if i-th subject exposed to comfort foods} \\
+  \mu_3 & \text{if i-th subject exposed to control foods} \end{cases}
+$$
+
+Notice that $f(\cdot)$ involves both a variable of interest as well as parameters of interest --- the mean response $\mu_1, \mu_2, \mu_3$ for each of the three groups.  This function is perfectly acceptable, but it is cumbersome to write in a shortened form.  Notice how the function works: it receives an input regarding which group, and it directs you to the appropriate parameter as an output.   Using indicator variables, we can write this in a compact way
+
+$$f\left((\text{Food Exposure Group})_i\right) = \mu_1 (\text{Group})_{1,i} + \mu_2 (\text{Group})_{2,i} + \mu_3 (\text{Group})_{3,i}$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{Group})_{1,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to organic foods} \\
+    0 & \text{if i-th subject not exposed to organic foods} 
+    \end{cases} \\
+  (\text{Group})_{2,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to comfort foods} \\
+    0 & \text{if i-th subject not exposed to comfort foods} 
+    \end{cases} \\
+  (\text{Group})_{3,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to control foods} \\
+    0 & \text{if i-th subject not exposed to control foods}
+    \end{cases}
+\end{aligned}
+$$
+
+Each of the $(\text{Group})_{j}$ variables is an indicator capturing whether the i-th observation belongs to the j-th group.  The function $f(\cdot)$ embeds the parameters that define our question.
+
+```{block2, type="rmdkeyidea"}
+The deterministic component of a statistical model incorporates the parameters which govern the question of interest.  It is built to explain differences in the response based on differences in group membership or other characteristics of the subjects.
+```
+
+Inserting this function $f(\cdot)$ into our general modeling framework, we have the following model for the data generating process:
+
+\begin{equation}
+  (\text{Moral Expectation Score})_i = \mu_1 (\text{Group})_{1,i} + \mu_2 (\text{Group})_{2,i} + \mu_3 (\text{Group})_{3,i} + \epsilon_i
+  (\#eq:anova-model)
+\end{equation}
+
+The deterministic component says that every single person exposed to the same food group should have the same moral expectations, and the stochastic portion of the model allows individuals within the same group to vary.  Because this model is very directly partitioning the variability in the response, it is often called an ANOVA (ANalysis Of VAriance) model.  This is somewhat of a silly name since we have seen that all statistical models partition the variability in the response, and the above model is simply a regression model.  But, the name has stuck.
+
+```{block2, type="rmdkeyidea"}
+The stochastic component of a statistical model captures the unexplained variability due to natural variability in the population or measurement error in the response.
+```
+
+Before proceding, let's compare the model in Equation \@ref(eq:anova-model) to when we considered a simple linear model for the data generating process.  Equation \@ref(eq:anova-model) contains three parameters, each of which is attached to a "predictor" (which happens to be an indicator variable).  Further, there is no "intercept" term in the model.  So, our model for the data generating process relating a quantitative response and a categorical predictor is actually a special case of a general regression model without an intercept term.  This is true in general.
+
+```{block2, type="rmdtip"}
+In general, given a quantitative response variable, our model for the data generating process comparing this variable across $k$ levels of a factor is
+
+$$(\text{Response})_i = \sum_{j=1}^{k} \mu_j (\text{Group})_{j, i} + \epsilon_i$$
+  
+where
+
+$$(\text{Group})_{j,i} = \begin{cases}
+  1 & \text{if i-th observation belongs to group j} \\
+  0 & \text{if i-th observation does not belong to group j}
+  \end{cases}$$
+
+```
+
+Just as before, we need to distinguish between the model for the data generating process and the model for the sampling distribution of the parameter estimates or the null distribution for a standarized statistic.  While we need the latter for inference, the model for the data generating process is a necessary stepping stone along the way.
+
+The parameters in this model are of course unknown.  They can be estimated using the method of least squares.  This actually results in exactly what we might hope --- the least squares estimate of the mean for the j-th group is the sample mean of the response using only observations from the j-th group.  That is, we use the observed mean response from each group as an estimate of the mean response for each group.  
+
+However, these estimates, as with any estimate, have variability associated with them.  In order to make inference, we must determine a suitable model for the sampling distribution (or null distribution if appropriate).  This is done by placing conditions on the stochastic portion of the model.
+
+
+
+## Conditions on the Error Distribution
+In our model for the data-generating process we incorporated a component $\epsilon$ to capture the noise within each group.  Since the error is a random variable (stochastic element), we know it has a distribution.  We typically assume a certain structure to this distribution.  The more assumptions we are willing to make, the easier the analysis, but the less likely our model is to be applicable to the actual data-generating process we have observed.  The conditions we make dictate how we conduct inference (the computation of a p-value or confidence interval).
+
+The first condition we consider is that the noise attributed to one observed individual is independent of the noise attributed to any other individual observed.  That is, the amount of error in any one individual's response is unrelated to the error in any other response observed. 
+
+The second condition that is typically placed on the distribution of the errors is that the errors are identically distributed.  Again, we introduced this condition in Chapters \@ref(MeanModels) and \@ref(Regconditions).  In particular, if the errors are not identically distributed, it is typically because the variability of the error differs for one value of the predictor compared to another.  Practically, this reveals itself as our response being more precise in one group than in another.  As a result of focusing on the variability of the response for each predictor, this condition is often referred to as _homoskedasticity_ instead of the errors being identically distributed.
+
+The third condition we might consider imposing is that the errors in the response follow a Normal distribution, as discussed in Chapter \@ref(Regconditions).  If this condition holds, it implies that within each group, the distribution of the response variable itself is Normally distributed.  
+
+As in regression modeling, we are not required to impose all three conditions in order to obtain a model for the sampling distribution.  Historically, however, all three conditions are imposed.
+
+At this point, you might be wondering what happened to the "mean zero" condition we imposed in regression models in which we assumed the error had the value of 0, on average, for all values of the predictor.  Recall that this assumption implied that the model for the mean response was correctly specified, that no curvature was ignored.  In our model above, with only a single categorical predictor with $k$ levels (captured through $k$ indicator variables), there is no "trend" being described.  That is, instead of saying that the mean response increases (or decreases, or has any particular shape) as we move across the factors of the predictor, the model allows the mean response for each group to be completely unrelated to any other group.  Since there is no "trend" term in the mean response model, we need not assume it is correctly specified.
+
+
+## Classical ANOVA Model
+In the preceeding section, we discussed three conditions we could place on the stocastic portion of the data generating process.  Placing all three conditions on the error term is what we refer to as the "Classical ANOVA Model."
+
+```{definition, label=defn-classical-anova, name="Classical ANOVA Model"}
+For a quantitative response and categorical variable, the classical ANOVA model assumes the following data-generating process:
+
+$$(\text{Response})_i = \sum_{j=1}^{k} \mu_j (\text{Group})_{j, i} + \epsilon_i$$
+  
+where
+
+$$(\text{Group})_{j,i} = \begin{cases}
+  1 & \text{if i-th observation belongs to group j} \\
+  0 & \text{if i-th observation does not belong to group j}
+  \end{cases}$$
+
+and 
+
+  1. The errors are independent of one another.
+  2. The errors from one group have the same variability as all other groups.
+  3. The errors follow a Normal Distribution.
+  
+It is possible to relax these assumptions; however, this is the default "ANOVA" analysis implemented in the majority of statistical packages.
+```
+
+
+## Imposing the Conditions
+Let's return to our model for the moral expectation score as a function of the food exposure group:
+
+$$(\text{Moral Expectation Score})_i = \mu_1 (\text{Group})_{1,i} + \mu_2 (\text{Group})_{2,i} + \mu_3 (\text{Group})_{3,i} + \epsilon_i$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{Group})_{1,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to organic foods} \\
+    0 & \text{if i-th subject not exposed to organic foods} 
+    \end{cases} \\
+  (\text{Group})_{2,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to comfort foods} \\
+    0 & \text{if i-th subject not exposed to comfort foods} 
+    \end{cases} \\
+  (\text{Group})_{3,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to control foods} \\
+    0 & \text{if i-th subject not exposed to control foods}
+    \end{cases}
+\end{aligned}
+$$
+
+Using the method of least squares, we can estimate the parameters in the model; this leads to the following estimates for the average moral expectation score:
+
+```{r anovamodel-fit, echo=FALSE}
+fit.organic <- lm(moral_avg ~ Food_Condition - 1, data = organic.df)
+```
+
+
+$$
+\begin{aligned}
+  \text{Average moral expecation score if exposed to organic foods} &= \widehat{\mu}_1 = `r round(coef(fit.organic)[1], 2)` \\
+  \text{Average moral expectation score if exposed to comfort foods} &= \widehat{\mu}_2 = `r round(coef(fit.organic)[2], 2)` \\
+  \text{Average moral expectation score if exposed to control foods} &= \widehat{\mu}_3 = `r round(coef(fit.organic)[3], 2)`
+\end{aligned}
+$$
+
+If we are willing to assume the data is consistent with the conditions for the classical ANOVA model, we are able to model the sampling distribution of these estimates and therefore construct confidence intervals.  Table \@ref(tab:anovamodel-summary) summarizes the fit for the above model.  In addition to the least squares estimates, it also contains the standard error of the statistic, quantifying the variability in the estimates as well as a 95% confidence interval estimating each parameter.  
+
+```{r anovamodel-summary, echo=FALSE}
+fit.organic %>%
+  estimate_parameters(confidence.level = 0.95,
+                      assume.identically.distributed = TRUE,
+                      assume.normality = TRUE) %>%
+  rename(Term = term,
+         Estimate = estimate,
+         `Standard Error` = standard.error,
+         `Lower 95% CI` = `95% lower`,
+         `Upper 95% CI` = `95% upper`) %>%
+  mutate(Term = recode(Term,
+                       "Food_Conditionorganic" = "Organic Foods Group",
+                       "Food_Conditioncomfort" = "Comfort Foods Group",
+                       "Food_Conditioncontrol" = "Control Foods Group")) %>%
+  knitr::kable(digits = 3, caption = "Summary of the model fit relating the moral expectation score of college students to the type of food to which they were exposed.")
+```
+
+Under the classical ANOVA model, there is an analytical model for the sampling distribution, and it is known.  As a result, the confidence interval can be computed from a formula.
+
+```{block2, type="rmdtip"}
+If the classical ANOVA model is assumed, the 95% confidence interval for the parameter $\mu_j$ can be approximated by
+
+$$\widehat{\mu}_j \pm (1.96)\left(\text{standard error of } \widehat{\mu}_j\right)$$
+
+```
+
+The confidence intervals allow us to estimate the mean moral expectation score within each group.  And, while the confidence intervals are similar for each of the groups, we have not actually addressed the question of interest.  We cannot use the confidence intervals given to directly compare the groups.  Instead, we must directly attack the hypotheses of interest by computing a p-value.  We consider this in the next chapter.
+
+```{block2, type="rmdtip"}
+It is common to try and compare the mean response of several groups by determining if the confidence intervals for the mean response overlap.  This is a mistake.  If you want to compare groups, you need to do a direct comparison through the analysis.
+```
+
+
+## Recap
+We have covered a lot of ground in this chapter, and it is worth taking a moment to summarize the big ideas.  In order compare the mean response in each group, we took a step back and modeled the data generating process.  Such a model consists of two components: a deterministic component explaining the differences between groups and a stochastic component capturing the noise in the system.
+
+Certain conditions are placed on the distribution of the noise in our model.  Depending on the set of conditions we impose will determine whether we develop an analytical model or an empirical model for the parameters in the model.  We still need to discuss how we compare the mean response of the groups based on this model. 
+

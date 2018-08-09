@@ -1,0 +1,6 @@
+"0","boot.var <- apply(boot.index, 2, function(u){"
+"0","  var(altered.gestation[u])"
+"0","})"
+"2","Error in apply(boot.index, 2, function(u) { : 
+  object 'boot.index' not found
+"

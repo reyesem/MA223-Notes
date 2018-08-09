@@ -1,0 +1,214 @@
+# Assessing Modeling Conditions {#Regassessment}
+
+We have been considering the simple linear model
+
+$$(\text{Response})_i = \beta_0 + \beta_1 (\text{Predictor})_{i} + \epsilon_i$$
+
+for the data-generating process of a quantitative response.  For example, for the [Seismic Activity Case Study](#CaseGreece), we considered a model that explained the bracketed duration at a location as a function of the magnitude of the earthquake:
+
+$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
+
+
+Estimates for the unknown parameters in this model were obtained via least squares estimation.  In order to obtain a model for the sampling distribution of these estimates (or the null distribution as appropriate), and thereby conduct inference, we added conditions to the distribution of the error term.  For example, under the "classical regression model" we require the following four conditions:
+
+  1. The error in the bracketed duration has an average of 0 regardless of the magnitude of the earthquake.
+  2. The error in the bracketed duration for one location is independent of the error in the bracketed duration for any other location.
+  3. The variability of the error in the bracketed duration is the same regardless of the magnitude of the earthquake.
+  4. The errors in the bracketed duration follow a Normal distribution.
+  
+We are also able to develop an empirical model for the sampling distribution only enforcing the first two of these conditions on the distribution of the error.  Which of the models for the sampling distribution should be used?  Unfortunately, we cannot simply state conditions and then proceed blindly.  In order to rely on the p-values and confidence intervals produced from any modeling procedure, the data must be consistent with these conditions.
+
+In this section, we discuss how we assess these conditions qualitatively.
+
+
+## Residuals
+One of the complications we face is that we are imposing conditions on the error term, but we do not observe the error (since the parameters are unknown).  However, we are able to determine the "error" in each observation with respect to the estimated model for the data generating process.  That is, we consider the difference between each observed response and what we would have predicted for this observation using the least squares estimates; this difference is called a __residual__.
+
+```{definition, label=defn-residual, name="Residual"}
+The difference between the observed response and the predicted response (estimated deterministic portion of the model). Specifically, the residual for the $i$-th observation is given by
+
+$$(\text{Residual})_i = (\text{Response})_i - \widehat{\beta}_0 - \widehat{\beta}_1 (\text{Predictor})_{i}$$
+
+Residuals approximate the noise in the data-generating process.
+```
+
+We can use the residuals to qualitatively assess if the observed data is consistent with each of the four potential conditions we might place on the distribution of the error term.
+
+```{block2, type="rmdkeyidea"}
+Residuals, since they are estimates of the noise in the data-generating process, provide a way of assessing the modeling conditions placed on the distribution of the error term.
+```
+
+
+## Assessing Mean 0
+  > The error in the bracketed duration has an average of 0 regardless of the magnitude of the earthquake.
+  
+It is tempting to read this condition and believe that a rational way to assess this assumption is determine if the average of the residuals is 0.  However, while the difference is subtle, the condition is _not_ that the average error is 0.  The condition is that the average error is 0 for _all values of the predictor_.  It would seem we need to determine if, for each value of the predictor possible, if the residuals average to 0.  This is infeasible because we do not generally have multiple responses for each value of the predictor.  We can, however, assess whether the data is consistent with this condition graphically.  That is, in order to assess this assumption, we need to graphically assess how the average behaves over a range of predictor values.  We capture this by looking at the _predicted values_.  Figure \@ref(fig:regassessment-mean0) shows the relationship between the residuals and the associated predicted (or fitted) values for the observations in the data set.  
+
+```{r regassessment-diagnostics, echo=FALSE}
+fit.greece.slr.diag <- augment(fit.greece.slr)
+```
+
+```{r regassessment-mean0, echo=FALSE, fig.cap="Plot of the residuals vs. the predicted values for a model predicting bracketed duration as a function of the magnitude of an earthquake."}
+ggplot(data = fit.greece.slr.diag) +
+  geom_point(mapping = aes(x = .fitted,
+                           y = .resid)) +
+  geom_ribbon(data = data_frame(x = c(4, 4.75), 
+                                ymax = c(6, 6), 
+                                ymin = c(-5, -5)),
+              mapping = aes(x = x, ymax = ymax, ymin = ymin),
+              fill = "green", alpha = 0.2) +
+  geom_ribbon(data = data_frame(x = c(10.25, 11),
+                                ymax = c(20, 20),
+                                ymin = c(-11, -11)),
+              mapping = aes(x = x, ymax = ymax, ymin = ymin),
+              fill = "green", alpha = 0.2) +
+  labs(x = "Predicted Values", y = "Residuals") +
+  theme_bw(12)
+```
+
+If the data is consistent with the condition, then as you move left to right across the plot, the residuals should tend to balance out at 0.  Imagine a window around the residuals (shown in the figure as green rectangles), and imagine moving that window from left to right.  If that window has to shift up or down to contain the cloud of residuals (so that the window is no longer centered around 0), that signals a problem.  Any trends in the location of this graphic would indicate the data is _not_ consistent with the condition.  
+
+There does not appear to be strong evidence of curvature in this plot.  It is reasonable to say this dataset is consistent with these conditions.
+
+
+## Assessing Independence
+  > The error in the bracketed duration for one location is independent of the error in the bracketed duration for any other location.
+  
+Generally, independence is assessed through the context of the data collection scheme.  By carefully considering the manner in which the data was collected, we can typically determine whether it is reasonable that the errors in the response are independent of one another.  Some key things to consider when examining the data collection process:
+
+  - Are there repeated observations made on the same subject?  This often suggests some type of relationship between the responses and therefore would not be consistent with errors being independent.
+  - Is the response measured over time (time-series) such as daily temperature over the course of a month?  Time-series data often exhibits strong period-to-period relationships suggesting the errors are not independent.  For example, if it is hot today, it will probably be hot tomorrow as well.
+  - Is there a learning curve in how the data was collected?  Learning curves again suggest some dependence from one observation to the next.  For example, a new nurse may become better at collecting pulse readings with more practice over time.
+  - Measurement devices which are failing over time will introduce a dependence from one observation to the next.  Imagine a bathroom scale that begins to add an additional pound each day.  Then, being above average weight one day will most likely lead to an above average weight the next, due primarily to the measurement device.
+  
+These last three points illustrate a particular deviation from our condition of independence in which two observations collected close together in time are related.  When we know the order in which the data was collected, we can assess whether the data tends to deviate from the condition of independence in this manner.  This is done graphically through a __time-series plot__ of the _residuals_.  If two errors were unrelated, then the value of one residual should tell us nothing about the value of the next residual.  Therefore, a plot of the residuals over time should look like noise (since residuals are supposed to be estimates of noise).  If there are any trends, then it suggests the data is not consistent with independence.
+
+```{definition, label=defn-time-series-plot, name="Time Series Plot"}
+Plot of a variable over time.  This plot allows us to assess some deviations from independence.  A trend in the _location_ or _spread_ of the points over time suggests a deviation from independence.
+```
+
+As an example, consider the time-series plots shown in Figure \@ref(fig:regassessment-independence-violations), both representing hypothetical datasets.  In Panel A, the residuals display a trend in the location over time.  Knowing that a response was below average suggests the next response will also be below average.  In Panel B, the results deplay a trend in the spread over time.  This suggests that measurements taken later in the study were less precise.  Both panels are then examples of patterns which would suggest the data is not consistent with the condition of independence.
+
+```{r regassessment-independence-violations, echo=FALSE, fig.cap="Examples of trends in a time-series plot of the residuals.  Such trends indicate the data is not consistent with the condition that the errors are independent of one another."}
+set.seed(201708)
+
+plot.dat <- data_frame(
+  Panel = rep(c("Panel A", "Panel B"), each = 100),
+  Response = c(rnorm(100, mean = seq(3, -3, length.out = 100), sd = 1),
+               rnorm(100, mean = 0, sd = seq(0.5, 3, length.out = 100))),
+  Order = rep(seq(100), times = 2)
+)
+
+ggplot(data = plot.dat,
+       mapping = aes(x = Order, y = Response)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Order of Data Collection", y = "Residual") +
+  theme_bw(12) +
+  facet_wrap(~Panel)
+```
+
+Instead, if the data were consistent with the condition of independence on the error terms, we would expect to see a plot as in Figure \@ref(fig:regassessment-independence-reasonable).  Notice there are no trends in the location or spread of the residuals.
+
+```{r anovaassessment-independence-reasonable, echo=FALSE, fig.cap="Example of a time-series plot of residuals which shows no trends in location or spread.  This is consistent with what we would expect if the condition of independence among errors were satisfied."}
+set.seed(201708)
+
+plot.dat <- data_frame(
+  Order = seq(100),
+  Response = rnorm(100)
+)
+
+ggplot(data = plot.dat,
+       mapping = aes(x = Order, y = Response)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Order of Data Collection", y = "Residual") +
+  theme_bw(12)
+```
+
+For the [Seismic Activity Case Study](#CaseGreece), the data was actually collected over time as earthquakes occurred.  More, as technology has changed over time, it is reasonable to fear that the errors in our observations are related over time.  In order to assess this, consider the plot of the residuals from fitting the above model against the order in which they were collected; this is shown in Figure \@ref(fig:regassessment-independence).  Based on the figure, there is no clear trend in either the _location_ or _spread_ of the residuals over time (the figure resembles noise with no patterns).  As a result, it is reasonable to assume that the data is consistent with the errors being independent of one another.
+
+```{r regassessment-independence, echo=FALSE, fig.cap="Time series plot of the residuals for a model predicting bracketed duration as a function of the magnitude of an earthquake."}
+ggplot(data = fit.greece.slr.diag,
+       mapping = aes(x = seq_along(.rownames),
+                     y = .resid)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Order of Data Collection", y = "Residuals") +
+  theme_bw(12)
+```
+
+The condition of independence is another reason we consider randomization when collecting data.  Both random sampling and random assignment reduces the likelihood of the errors in two observations being related.
+
+
+## Assessing Homoskedasticity
+  > The variability of the error in the bracketed duration is the same regardless of the magnitude of the earthquake.
+  
+Similar to assessing whether the data is consistent with the condition of the errors being 0 on average for all values of the predictor, homoskedasticity suggests the variability in the errors is consistent for all values of the predictor.  Therefore, we rely on the same graphical assessment: Figure \@ref(fig:regassessment-mean0).  However, instead of focusing on a trend in the location of the residuals, we are focused on a trend in the variability.  Again, imagine a window (illustrated as green rectangles) around the residuals.  As you move left to right, if the size of the window has to change in order to keep the residuals inside (the window stretches or compresses vertically), then that is an indication that the variability is changing.  For our example, there is a clear "fan shape" to the residuals as you move left to right suggesting the precision of the model decreases when making larger predictions.  This goes back to something we observed in Chapter \@ref(Regsummaries) when examining a plot of the raw data.  Figure \@ref(fig:regsummaries-magnitude) illustrates that for large earthquakes (high magnitudes), the bracketed duration was much more variable than for smaller earthquakes.  So, our model is not as precise for some values of the predictor.  This is evidence that our data is _not_ consistent with the condition that the errors have the same variability for all values of the predictor.
+
+This partially explains the differences in the confidence intervals reported in Tables \@ref(tab:regconditions-slr-summary) and \@ref(tab:regconditions-slr-summary-alt).  Since there is clear evidence that the data is not consistent with the condition that the variability of the errors is constant for all levels of the predictor, then it is not safe to assume the classical regression model.  That is, the confidence intervals and p-values, as well as the underlying models for the sampling distribution and null distribution that generated them, constructed assuming the data is consistent with all four conditions, are suspect.  We should instead rely on an empirical model for the sampling distribution of the estimates when constructing confidence intervals or an empirical model for the null distribution if computing a p-value.
+
+
+## Assessing Normality
+  > The errors in the bracketed duration follow a Normal distribution.
+  
+Assessing whether observations adhere to a particular distribution is a large area in statistical research.  Many methods have been developed for this purpose.  We emphasize a single graphical summary known as a __probability plot__.  The construction of the plot is beyond the scope of this text, but the concepts underlying its construction actually tie in nicely to the big themes of the course.  Recall that if a sample is representative, then it should be a snapshot of the underlying population.  Therefore, if we believe the underlying population has some particular distribution, we would expect the properties of this distribution to be apparent in the sample as well.
+
+If we believe the errors follow a Normal distribution, then it is reasonable that the residuals should maintain some of those properties.  For example, the 10-th percentile of the residuals should roughly equate to the 10-th percentile expected from a Normal distribution.  Mapping the percentiles that we observe to those that we expect is the essence of a probability plot.
+
+```{definition, label=defn-probability-plot, name="Probability Plot"}
+Sometimes called a "Quantile-Quantile Plot", a graphic for comparing a theoretical probability model for the distribution of an underlying population with the distribution of the sample.  The resulting plot should exhibit a straight line.  If points deviate from this linear trend, that suggests the sample does not align with the proposed model for the distribution.
+```
+
+While a probability plot can be used for a host of probability distributions, the most common is the Normal probability plot.  The plot compares the percentiles observed residuals with those we would expect if the sample were from a Normal distribution.  Trends away from a linear relationship suggest the proposed Normal distribution is not a reasonable model for the distribution of the errors.
+
+Figure \@ref(fig:regassessment-normal) shows the probability plot for the residuals.
+
+```{r regassessment-normal, echo=FALSE, fig.cap="Probability plot of the residuals for a model predicting bracketed duration as a function of the magnitude of an earthquake."}
+ggplot(data = fit.greece.slr.diag,
+       mapping = aes(sample = .resid)) +
+  stat_qq() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_bw(12)
+```
+
+There is some evidence that the residuals are moving away from a linear relationship.  This is because we note some curvature in the plot, particularly toward the bottom left portion of the graphic.  While we want to avoid over-interpreting small deviations from the linear trend, we should pay attention to clear departures.  
+
+We note that of the conditions considered, Normality is probably the least important as the analytic models for the sampling distribution are generally fairly robust to this condition.  That is, those models for the sampling distribution, as well as the confidence intervals and p-values they produce, tend to be accurate even if the data is not consistent with this condition.  This is especially true in large samples.  However, we can always relax this condition by building an empirical model for the sampling distribution.  Given the curvature observed in this graphic, we would consider an empirical model, especially given we have already established the data is not consistent with the condition of homoskedasticity.
+
+For comparison, Figure \@ref(fig:regassessment-normal-bad) illustrates a hypothetical dataset for which the residuals suggest the condition of the errors following a Normal distribution is violated.
+
+```{r regassessment-normal-bad, echo=FALSE, fig.cap="Probability plot of residuals for a hypothetical dataset.  The trend away from a straight line suggests assuming the errors follow a Normal distribution would be unreasonable."}
+set.seed(201708)
+
+plot.dat <- data_frame(
+  resids = rexp(100)
+)
+
+ggplot(data = plot.dat,
+       mapping = aes(sample = resids)) +
+  stat_qq() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_bw(12)
+```
+
+
+## General Tips for Assessing Assumptions
+Each of the methods presented here are qualitative assessements, which means they are subjective.  That is okay.  As the analyst, it is up to you to determine which conditions you are willing to assume are reasonable to impose.  That is, with which conditions do you believe the data is consistent?  Here are three overall things to keep in mind.
+
+First, do not spend an extraordinary amount of time examining any one residual plot.  If you stare at a plot too long, you can convince yourself there is pattern in anything.  We are looking for glaring evidence that the data is not consistent with the conditions we have imposed on our model.  This is especially true when we have only a few observations.  In these settings, reading plots can be very difficult.  Again, it is about what you are comfortable assuming; how much faith do you want to place in the results?
+
+Second, we have chosen the language carefully throughout this chapter.  We have never once stated that a condition "was satisfied."  When we perform an analysis, we are making an _assumption_ that the conditions are satisfied.  We can never prove that they are; we can only show that the data is consistent with a particular condition.  We can, however, provide evidence that a condition is violated.  When that is the case, we should be wary of trusting the resulting p-values and confidence intervals.  This is not unlike hypothesis testing; just as we can never prove the null hypothesis is true, we cannot prove that a condition is satisfied.
+
+Finally, any conditions required for a particular analysis should be assessed.  If your sample is not consistent with the necessary conditions, you should choose a different analysis.  The inference you obtain from an analysis is only reliable of the data is consistent with any necessary conditions.
+
+```{block2, type="rmdtip"}
+The conditions for a model are placed on the error, but the residuals are used to assess whether a dataset is consistent with these conditions, allowing us to determine if assuming the conditions are satisfied is reasonable.
+
+  1. We can never prove a condition is satisfied.
+  2. The assumptions are not on the residuals, but the errors.
+  3. A sample should be consistent with any conditions you impose on your model.
+  
+If a sample is not consistent with the conditions you impose, you should consider revising your analysis.
+```
+

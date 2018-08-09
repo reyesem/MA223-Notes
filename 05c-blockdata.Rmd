@@ -1,0 +1,23 @@
+# Correlated Data {#Blockdata}
+
+Chapter \@ref(ANOVAdata) discussed three aspects of a well-designed study: replication, randomization, and comparative groups.  Of particular interest for us in this unit is the concept of blocking for creating groups which are as similar as possible to reduce external variability.  Restating Definition \@ref(def:defn-blocking):
+
+  > Blocking is one way of minimizing variability contributed by an inherit characteristic.  All observations that are linked through the characteristic are grouped together and random allocation (if applicable) occurs _within_ the block.
+  
+A block is formed by subjects which have some underlying commonality.  An extreme case occurs when you repeatedly measure the response on the same subject under different treatment conditions.  This is exactly what happened in the [Frozen Yogurt Case Study](#CaseYogurt).  Each subject was measured three times, once under each of the conditions.  In order to really comprehend the effect of this, consider an alternative study design:
+
+  > Take each of the nine subjects and randomly assign each to one of the three yogurt vendors (3 subjects to each yogurt vendor).  Each subject rates the yogurt assigned.
+  
+This alternative study design is completely valid and feasible, but there seems an intuitive advantage to having each subject rate not just one yogurt, but instead rate all the yogurts being tested.  This is indeed the case; by making the subjects taste each of the three vendor yogurts, then the three groups are as similar as possible (the same group exposed to each of the three treatments).  This increases the power of the study (given the same number of subjects), but it also has an effect on the analysis we conduct.
+
+Suppose one of the subjects in the study does not really enjoy frozen yogurt (more of an ice cream fan); then, their ratings on the taste will tend to be lower than other subjects _for each of the vendors_.  Similarly, a huge frozen yogurt fan will tend to have taste ratings which are higher than other subjects for each of the vendors.   If you are told the taste rating for the name-brand vendor given by the subject who does not really enjoy frozen yogurt, you have a pretty good guess of what their rating will be on the other vendors.  There is a _correlation_ between their responses across the factor levels; that is, the responses are not independent of one another.  This relationship is what provides power in the study, but it is also what needs to be accounted for in our analysis.
+
+In the [Frozen Yogurt Case Study](#CaseYogurt), the order in which the yogurt from each vendor was given to a subject was randomized.  That is, the randomization did not occur at the subject-level but within the subject.  When randomization occurs within the block, the study is referred to as a __randomized complete block design__.
+
+```{definition, label=defn-rcbd, name="Randomized Complete Block Design"}
+A controlled experiment utilizing blocking.  Each treatment is randomized to units within blocks in such a way that every treatment is present within the block and the same number of units are assigned to each treatment.
+```
+
+Block designs need not be from controlled experiments.  For example, pre-post tests are an example of a block design in which each subject is tested prior to and following some intervention.  The subjects act as the blocks; however, the "treatment" groups (pre and post) are not randomized.  This would be an example of an observational study with blocks.
+
+The [Frozen Yogurt Case Study](#CaseYogurt) is a common example in which the blocks are formed by taking repeated measurements on the subjects.  Blocked designs can extend further.  Example \@ref(ex:anovadata-golf) illustrates that this need not be the case.  In that example, the blocks were composed of separate units (golf greens) which had a similar characteristic (slope of green) which created the block.

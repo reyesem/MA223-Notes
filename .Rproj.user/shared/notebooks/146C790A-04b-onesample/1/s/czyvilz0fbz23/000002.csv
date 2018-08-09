@@ -1,8 +1,0 @@
-"0","ggplot(data = babies.df,"
-"0","       mapping = aes(x = Weight)) +"
-"0","  geom_density(fill = ""grey75"", colour = ""black"", size = 1.1) +"
-"0","  labs(x = ""Birthweight (g)"", y = """") +"
-"0","  theme_bw(12) +"
-"0","  theme(axis.title.y = element_blank(),"
-"0","        axis.text.y = element_blank(),"
-"0","        axis.ticks.y = element_blank())"

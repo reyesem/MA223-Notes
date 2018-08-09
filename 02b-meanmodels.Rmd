@@ -1,0 +1,118 @@
+# Model for the Data Generating Process {#MeanModels}
+
+The numerical summaries of any study are subject to sampling variability.  That is, if we were to repeat the study with new subjects, the statistics we compute would almost certainly change to some degree.  The key to feeling confident in our results is to quantify the variability in our estimates; this was the argument made in Chapters \@ref(SamplingDistns) and \@ref(NullDistns).  The goal of any statistical analysis is then to develop a model for the sampling (or null) distribution of a statistic.  Often times, this requires modeling the data-generating process as a precursor.  As in any other discipline, statistical models simplify the actual process being modeled by making certain assumptions.  In this chapter, we develop a model that will help us make inference about the mean of a single population.
+
+
+## General Formulation
+Consider dropping a tennis ball from the top of a 50-meter building and recording the time required before the ball hits the ground.  Applying the principles learned in a first course in physics, we would be able to compute the time precisely using the formula
+
+$$\text{time} = \sqrt{\frac{2(\text{distance})}{9.8}}$$
+
+where $9.8 m/s^2$ is the acceleration due to gravity; further, this formula works regardless of the mass of the object.  Plugging 50 meters into the equation yields a time of `r round(2*50/9.8, 2)` seconds.  If we were to drop a second tennis ball from the same building, the formula tells us that it will also take `r round(2*50/9.8, 2)` seconds to hit the ground below.  This is known as a __deterministic__ system since entering a constant input always results in the same output.
+
+```{definition, label=defn-deterministic-process, name="Deterministic Process"}
+One which is completely determined by the inputs.  That is, entering the same input twice will always result in the same output with certainty.
+```
+
+This is a model; it simplifies extremely complex processes involving the gravitational pull between objects and works reasonably well.  However, it does not always match reality.  If we were to repeatedly drop tennis balls from the same 50-meter building and record the time before hitting the ground, we might find that the time differs slightly from one ball to the next (it is true that these differences may be negligible, but they would exist nonetheless).  There are several reasons why our observed responses do not line up directly with those predicted by the above equation; for example, our device for measuring time may be subject to some measurement error, a strong gust of wind could alter the results (while the above equation assumes no air resistance), or the person dropping the ball may have inadvertantly increased the initial velocity of the ball.  These reasons, and others, contribute to the observations not lining up with the model.  That is, there is associated noise in the resulting measurements.  A model which incorporates this noise might be written as
+
+$$\text{time} = \sqrt{\frac{2(\text{distance})}{9.8}} + \text{noise}$$
+
+where the noise is not a known quantity.  As a result, this is a __stochastic__ model as the same value for distance may result in different outputs even if the same input is used.
+
+```{definition, label=defn-stochastic-process, name="Stochastic Process"}
+One which has an element of randomness.  That is, the resulting output of the system cannot be predicted with certainty.
+```
+
+This leads us to our general formulation for a statistical model:
+
+\begin{equation}
+  \text{Response} = f(\text{predictor variables, parameters}) + \text{noise}
+  (\#eq:general-model)
+\end{equation}
+
+  
+The response we observe is the result of two components:
+
+  - A deterministic component which takes the form of a function of predictor variables and unknown parameters.  It is often this component on which we would like to make inference.
+  - A stochastic component which captures the unexplained variability in the data generating process.
+  
+Since the noise is a random element, it has a distribution.  We often place conditions on the structure of this distribution to enable inference on the deterministic component of the model.  We discuss this later in the chapter.
+
+This general model adheres to the idea of partitioning the variability in the response.  It says that a part of the reason the responses differ between subjects is because they have different predictor variables (remember, parameters are fixed for all subjects in a population), and part of the reason is unexplained noise.  The overall goal of a statistical model is to give an explanation for why the value of the response is what it is.  How did it come to be?  What process generated the values I have observed?  Our statistical model says that these values have some deterministic component plus some additional noise we cannot explain.  
+
+We now simplify this general formulation for the specific case of making inference on the population mean.
+
+
+## Statistical Model for a Quantitative Response with No Predictors
+Consider the [Birth Weights Case Study](#CaseBabies).  Suppose we are interested in estimating the average birth weight of infants born in North Carolina, the population from which our sample was taken.  Our response variable is the birth weight of the infant.  Our question of interest is not about the relationship of the birth weight to any other variable; that is, there are no predictor variables being considered.  But, that does not mean the deterministic portion of our model is empty.  We have a parameter of interest: the average birth weight.  This parameter lives in the deterministic portion of the model.  In particular, consider the following data generating process:
+
+$$(\text{Birth Weight})_i = \mu + \epsilon_i$$
+
+where $\mu$ represents the average birth weight of infants born in North Carolina.  In this model, the function $f(\cdot)$ takes the value $\mu$, a constant.  The term $\epsilon_i$ is used to capture the noise in the $i$-th measurement (the subscript indexes the individual subjects in the sample) --- the shift the response for the $i$-th individual is from the overall mean response.  This model says that the birth weight for the $i$-th infant is shifted (as a result of the noise term) from the overall average birth weight $\mu$.  Notice that if there were no noise in the system, the data generating process would say that all infants have the same birth weight $\mu$.  However, due to genetic variability, differences in the lifestyle of each mother, and measurement error, $\epsilon_i$ is not a constant (noise does exist) resulting in each subject having a different response.
+
+Notice that the deterministic portion of the model describes the _mean response_ through the parameter.  We will see this throughout the text.
+
+```{block2, type="rmdtip"}
+The deterministic portion of the data generating process encodes the parameters which specify the mean response.
+```
+
+So, when the model for the data generating process does not contain a predictor variable, we are saying that the only source of variability in the response is due to noise.  In reality, we are not claiming that there do not exist any other sources of variability, we are simply not taking them into account at this point.
+
+```{block2, type="rmdkeyidea"}
+The stochastic component of a statistical model captures the unexplained variability due to natural variability in the population or measurement error in the response.
+```
+
+```{block2, type="rmdtip"}
+In general, given a quantitative response variable and no predictors, our model for the data generating process is
+$$(\text{Response})_i = \mu + \epsilon_i$$
+  
+where $\mu$ represents the average response in the population, and the parameter of interest.
+```
+
+It is worth pointing out that we have two "models" at this point: a model for the data generating process and a model for the sampling distribution of a statistic.  The model for the data generating process is used to develop a model for the sampling distribution (or null distribution) of a statistic.  It is the second model that is actually necessary in order to conduct inference; the model for the data-generating process is simply a stepping stone to the model of interest.
+
+```{block2, type="rmdtip"}
+The function $f(\cdot)$ is often referred to as the model for the _mean response_, for obvious reasons.  So, for the model of a quantitative response variable with no predictors, our model for the mean response is simply $\mu$.
+```
+
+
+## Conditions on the Error Distribution
+In our model for the data-generating process we incorporated a component $\epsilon$ to capture the noise observed in the response.  Since the error is a random variable (stochastic element), we know it has a distribution.  We typically impose a certain structure to this distribution through the assumption of specific conditions.  The more conditions we impose, the easier it is to construct an analytical model for the sampling distribution of the corresponding statistic.  However, the more conditions we impose, the less applicable our model is in a general setting.  More importantly for our discussion, the conditions we make dictate how we conduct inference (the computation of a confidence interval or p-value).
+
+```{block2, type="rmdtip"}
+Why we need conditions on the stochastic portion of a model can be confusing at first.  Think of it this way...saying a term is "random" is just too broad.  It is like saying "I am thinking of a number.  What number?"  There are too many choices to even have a hope of getting it correct.  We need structure (boundaries, conditions) on the problem.  By placing conditions on what we mean by "random" it is like saying "I am thinking of a whole number between 1 and 10."  Now, we have a problem we can at least attack with some confidence.
+```
+
+The first condition we consider is that the noise attributed to one observed individual is __independent__ of the noise attributed to any other individual observed.  That is, the amount of error $\epsilon$ in any one individual's response is unrelated to the error in any other response observed.  It is easiest to understand this condition by examining a case when the condition would not hold. 
+
+```{definition, label=defn-independence, name="Independence"}
+Two variables are said to be independent when the likelihood that one variable takes on a particular value does not depend on the value of the other variable.  
+```
+
+```{example, label=ex-puzzles, name="Puzzle Speed"}
+Suppose we are conducting a study to estimate the amount of time, on average, required for a student to complete a small puzzle.  We obtain a random sample of 25 students.  We have student 1 complete the puzzle, allowing the other students to watch, and we record the time required for him to complete the puzzle.  Then, we have student 2 complete the same puzzle, again allowing the other students to watch, and we record her time.  We continue in this way until we have recorded the time for each of the 25 students.
+
+The model for the data generating process would be
+$$(\text{Time})_i = \mu + \epsilon_i$$
+  
+where $\mu$ is the average time required to complete a puzzle by a student.  We might estimate $\mu$ with $\bar{x} = \frac{1}{25}\sum_{i=1}^{25} (\text{Time})_i$$, the sample mean time for the 25 students observed.  
+
+Given the method in which the data as collected, it would _not_ be reasonable to assume the error are independent of one another.  Since later students observed the puzzle being put together more times prior to completing the task themselves, we might expect their time to get faster.  So, the noise in one student's time would be related to the noise in the next student's time.  This violates the independence condition.
+```
+
+A second condition we might consider is that the error for each subject is __identically distributed__.  This ensures that every student essentially belongs to the same population.  
+
+```{definition, label=defn-identically-distributed, name="Identically Distributed"}
+A set of variables is said to be identically distributed if they are from the same population.
+```
+
+Practically, this means that we do not have a systematic component which is causing our population to be different from what we expected.  As an example, consider Example \@ref(ex:ex-puzzles) again.  Suppose that 5 of the students in the sample belonged to the puzzle club.  Clearly we would expect these 5 individuals to perform differently than students in general.  If students belonging to a puzzle club were not a part of our target population, this would result in our sample reflecting two distinct populations: those in a puzzle club and those not in a puzzle club.  Therefore, the data would not satisfy the identically distributed condition.
+
+These two conditions alone are sufficient for modeling the sampling distribution of the sample mean, our estimate for the mean response, using the bootstrap process we described in Chapter \@ref(SamplingDistns).  It is worth noting that the _identically distributed_ condition could be relaxed, or we could actually impose further conditions on the model.  These alterations to our model for the data generating process will be discussed later in the text.  For now, we will assume that the data is consistent with both the independence and identically distributed conditions.
+
+```{block2, type="rmdtip"}
+We distinguish between a "condition" and an "assumption" (not all authors make such a distinction).  A _condition_ is a requirement for the statistical theory on which we are relying to be justified.  In practice, we can never guarantee a condition is satisfied; as a result, we _assume_ the data is consistent with the condition.  This will become clearer as we assess conditions in later units.
+```
+
+Before leaving this chapter, it is worth noting that what we have discussed in this chapter does not change any of the fundamentals we discussed in previous chapters.  This chapter will serve as a way of uniting all the methods we discuss in this text under a single framework.  We still summarize the data in the same way as before; we now simply have an additional tool for developing our inferential methods.

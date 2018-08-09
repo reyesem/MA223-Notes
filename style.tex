@@ -1,52 +1,188 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % File: style.tex
-% Description: Create styles for custom block elements.
+% Description: Create look for PDF version of text.
 
-\newenvironment{rmdkeyidea}%
-  {\begin{center}
-    \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
-    \textbf{Key Idea: }
-  }
-  {
-  \\\\\hline
-  \end{tabular}
-  \end{center}
-  }
 
-\newenvironment{rmdfivefund}%
-  {\begin{center}
-    \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
-    \textbf{Fundamental Idea: }
-  }
-  {
-  \\\\\hline
-  \end{tabular}
-  \end{center}
-  }
 
-\newenvironment{rmdwarning}%
-  {\begin{center}
-    \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
-    \textbf{Warning: }
-  }
-  {
-  \\\\\hline
-  \end{tabular}
-  \end{center}
-  }
 
-\newenvironment{rmdtip}%
-  {\begin{center}
-    \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
-    \textbf{Tip: }
-  }
-  {
-  \\\\\hline
-  \end{tabular}
-  \end{center}
-  }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem Environments
+\usepackage{amsthm}
+
+\makeatletter
+\newtheoremstyle{mydefn}% name of the style to be used
+{\baselineskip}% measure of space to leave above the theorem. E.g.: 3pt
+{\baselineskip}% measure of space to leave below the theorem. E.g.: 3pt
+{\addtolength{\@totalleftmargin}{1em}%
+  \addtolength{\linewidth}{-1em}%
+  \parshape 1 1em \linewidth
+  \slshape}% name of font to use in the body of the theorem
+{}% measure of space to indent
+{\bfseries}% name of head font
+{:}% punctuation between head and body
+{\newline}% space after theorem head; " " = normal interword space
+{}% Manually specify head
+\makeatother
+
+\makeatletter
+\newtheoremstyle{myexmpl}% name of the style to be used
+{\baselineskip}% measure of space to leave above the theorem. E.g.: 3pt
+{\baselineskip}% measure of space to leave below the theorem. E.g.: 3pt
+{\addtolength{\@totalleftmargin}{1em}%
+  \addtolength{\linewidth}{-1em}%
+  \parshape 1 1em \linewidth}% name of font to use in the body of the theorem
+{}% measure of space to indent
+{\bfseries}% name of head font
+{}% punctuation between head and body
+{\newline}% space after theorem head; " " = normal interword space
+{\thmname{#1}\thmnumber{ #2}:\thmnote{ {\mdseries``#3''}}}% Manually specify head
+\makeatother
+
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+\theoremstyle{mydefn}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+
+\theoremstyle{myexmpl}
+\newtheorem{example}{Example}[chapter]
+\newtheorem{exercise}{Exercise}[chapter]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{solution}{Solution}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% New Environments for Custom Blocks
+
+\graphicspath{{./images/}}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\definecolor{rhitred}{HTML}{800000}
+
+
+\newcommand{\mytitle}[1]{
+  \node[fill=rhitred,
+  rounded corners,
+  draw=white,
+  line width=2pt,
+  text width=4cm,
+  inner sep=8pt,
+  xshift=-2cm]
+  at (frame.north){\bfseries\textcolor{white}{#1}};
+}
+
+\newtcolorbox{rmdfivefund}{
+  enhanced,
+  overlay={\mytitle{Fundamental Idea:}},
+  borderline={2pt}{0mm}{rhitred},
+  borderline={.7pt}{1mm}{rhitred},
+  frame hidden,
+  sidebyside,
+  sidebyside align = top seam,
+  lefthand width = 2em,
+  arc=3mm,
+  segmentation hidden,
+  top=15pt,
+  before upper={\includegraphics[scale=0.05]{Icon_FundamentalIdea.png}\tcblower}
+}
+
+\newtcolorbox{rmdkeyidea}{
+  enhanced,
+  borderline={2pt}{0mm}{rhitred},
+  borderline={.7pt}{1mm}{rhitred},
+  frame hidden,
+  sidebyside,
+  sidebyside align = top seam,
+  lefthand width = 2em,
+  arc=3mm,
+  segmentation hidden,
+  top=15pt,
+  before upper={\includegraphics[scale=0.05]{Icon_KeyIdea.png}\tcblower}
+}
+
+\newtcolorbox{rmdwarning}{
+  enhanced,
+  borderline={2pt}{0mm}{rhitred},
+  borderline={.7pt}{1mm}{rhitred},
+  frame hidden,
+  sidebyside,
+  sidebyside align = top seam,
+  lefthand width = 2em,
+  arc=3mm,
+  segmentation hidden,
+  top=15pt,
+  before upper={\includegraphics[scale=0.04]{Icon_Tip.png}\tcblower}
+}
+
+\newtcolorbox{rmdtip}{
+  enhanced,
+  borderline={2pt}{0mm}{rhitred},
+  borderline={.7pt}{1mm}{rhitred},
+  frame hidden,
+  sidebyside,
+  sidebyside align = top seam,
+  lefthand width = 2em,
+  arc=3mm,
+  segmentation hidden,
+  top=15pt,
+  before upper={\includegraphics[scale=0.035]{Icon_Warning.png}\tcblower}
+}
+
+\let\BeginKnitrBlock\begin \let\EndKnitrBlock\end
+
+%\newenvironment{rmdkeyidea}%
+%  {\begin{center}
+%    \begin{tabular}{|p{0.9\textwidth}|}
+%    \hline\\
+%    \textbf{Key Idea: }
+%  }
+%  {
+%  \\\\\hline
+%  \end{tabular}
+%  \end{center}
+%  }
+%
+%\newenvironment{rmdfivefund}%
+%  {\begin{center}
+%    \begin{tabular}{|p{0.9\textwidth}|}
+%    \hline\\
+%    \textbf{Fundamental Idea: }
+%  }
+%  {
+%  \\\\\hline
+%  \end{tabular}
+%  \end{center}
+%  }
+%
+%\newenvironment{rmdwarning}%
+%  {\begin{center}
+%    \begin{tabular}{|p{0.9\textwidth}|}
+%    \hline\\
+%    \textbf{Warning: }
+%  }
+%  {
+%  \\\\\hline
+%  \end{tabular}
+%  \end{center}
+%  }
+%
+%\newenvironment{rmdtip}%
+%  {\begin{center}
+%    \begin{tabular}{|p{0.9\textwidth}|}
+%    \hline\\
+%    \textbf{Tip: }
+%  }
+%  {
+%  \\\\\hline
+%  \end{tabular}
+%  \end{center}
+%  }
 

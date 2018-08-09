@@ -1,0 +1,44 @@
+# Presenting Correlated Data {#Blocksummaries}
+
+Consider the graphical summary in Figure \@ref(fig:blocksummaries-bad-plot) of the data from the [Frozen Yogurt Case Study](#CaseYogurt).
+
+```{r blocksummaries-bad-plot, echo=FALSE, fig.cap="Illustration of a poor graphic summarizing correlated data; the graphic hides the fact that there were repeated measures on the subject.  It is not clear that the responses are in any way correlated."}
+ggplot(data = yogurt.df,
+       mapping = aes(y = Taste, x = Type)) +
+  geom_boxplot() +
+  labs(x = "Yogurt Vendor",
+       y = "Taste Rating") +
+  theme_bw(12)
+```
+
+Summarizing correlated data can be quite difficult.  If there are only a few blocks, indicating the various blocks with color can be helpful.  Figure \@ref(fig:blocksummaries-color-plot) uses color to distinuish responses from the same subject.
+
+```{r blocksummaries-color-plot, echo=FALSE, fig.cap="Results from a blind taste test comparing how subjects rated the taste of yogurt from three different vendors.  Ratings from the same subject are displayed using the same color."}
+set.seed(20180806)
+ggplot(data = yogurt.df,
+       mapping = aes(y = Taste, x = Type, color=`Participant ID`)) +
+  geom_jitter(width = 0.25, height = 0) +
+  labs(x = "Yogurt Vendor",
+       y = "Taste Rating",
+       color = "") +
+  guides(color = "none") +
+  theme_bw(12)
+```
+
+Even with only nine blocks, it can be difficult to distinguish one subject's response from another in Figure \@ref(fig:blocksummaries-color-plot).  Another technique is to connect the responses from a single subject; this is illustrated in Figure \@ref(fig:blocksummaries-line-plot).  This plot is disappointing due to the number of subjects who rated a yogurt similarly (more than one 9 rating was received for the name brand vendor as an example).
+
+```{r blocksummaries-line-plot, echo=FALSE, fig.cap="Results from a blind taste test comparing how subjects rated the taste of yogurt from three different vendors.  Ratings from the same subject are connected."}
+set.seed(20180806)
+ggplot(data = yogurt.df,
+       mapping = aes(y = Taste, x = Type, group=`Participant ID`)) +
+  geom_line() +
+  labs(x = "Yogurt Vendor",
+       y = "Taste Rating") +
+  theme_bw(12)
+```
+
+There is no universally adopted gold standard for summarizing correlated data.  The key here is that the correlation in the data should not be ignored and should be illustrated in the summary while still addressing the primary question of interest.
+
+```{block2, type="rmdkeyidea"}
+A good graphic should aid in partitioning the variability; with correlated responses, this includes indicating values which are related so that we can visually assess the variability between independent groups and within related groups.
+```

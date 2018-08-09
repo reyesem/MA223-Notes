@@ -1,0 +1,3 @@
+"0","summarize_variable(Percent_Fat ~ 1, data = bodyfat, mean, sd)"
+"2","Error in is.data.frame(data) : object 'bodyfat' not found
+"

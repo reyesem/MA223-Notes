@@ -27,6 +27,7 @@ knitr::opts_chunk$set(
 
 # Load necessary packages
 pkgs <- c(
+  "IntroAnalysis",
   "tidyverse",
   "stringr",
   "broom"
@@ -34,12 +35,10 @@ pkgs <- c(
 for(pkg in pkgs) library(pkg, character.only = TRUE)
 
 
-# Load bootstrap functions
-source("./_BootstrapFunctions.R")
-
 # Additional Options
 options(knitr.kable.NA = '',
-        dplyr.show_progress = FALSE)
+        dplyr.show_progress = FALSE,
+        contrasts = rep ("contr.treatment", 2))
 
 
 # Automatically create a bib database for R packages

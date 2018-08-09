@@ -1,237 +1,343 @@
 # Conditions on the Error Term of a Regression Model {#Regconditions}
 
-In the previous chapter we developed a general model for generating a quantitative response as a linear function of several predictors:
+In the previous chapter we developed a general model for generating a quantitative response as a linear function of a quantitative predictor:
 
-$$(\text{Response})_i = \beta_0 + \sum_{j=1}^{p} \beta_j (\text{Predictor})_{i,j} + \epsilon_i$$
+$$(\text{Response})_i = \beta_0 + \beta_1 (\text{Predictor})_{i} + \epsilon_i$$
 
-We also discussed a common method for estimating the parameters of this model from a sample --- the least squares method.  However, if we are to construct a model for the sampling distribution of these estimates we must add some structure to the stochastic component $\epsilon$ in the model.  Just as in the previous unit, the more assumptions we are willing to make, the easier the analysis, but the less likely our model is to be applicable to the actual data-generating process we have observed.  The conditions we make dictate how we conduct inference (the computation of a p-value or confidence interval).
+We also discussed a common method for estimating the parameters of this model from a sample --- the least squares method.  However, if we are to construct a model for the sampling distribution of these estimates we must add some structure to the stochastic component $\epsilon$ in the model.  We will find that the more assumptions we are willing to make, the easier the analysis, but the less likely our model is to be applicable to the actual data-generating process we have observed.  The conditions we make dictate how we conduct inference (the computation of a p-value or confidence interval).
 
 
-## Classical Regression Model
-In this section, we discuss four potential conditions we might place on the stochastic portion of the model.  As we will see, the conditions we consider are extremely similar to those considered in Chapter \@ref(ANOVAclassical).
 
-The first condition we consider is that the noise attributed to one observed individual is independent of the noise attributed to any other individual observed.  That is, the amount of error in any one individual's response is unrelated to the error in any other response observed.
+## Correctly Specified Model
+The first condition we consider is the most important.  It states that for every value of the predictor, the average error is 0.  This condition implies that the model we have posited for the data generating process is accurate; that is, it implies that the form of the model is appropriate --- that the response is linearly related to the predictor.  There are two reasons we say that this is the most important condition:
 
-The second condition that is typically placed on the distribution of the errors is that the variability of the responses is similar for every value of the predictor variables (homoskedasticity).  This generalizes the way we characterized the condition in the ANOVA model; the primary difference is that in ANOVA, we had a finite number of groups over which the variance had to remain constant.  Now, we are asking the variability about the regression line to be constant for all values of the predictors.
-
-The third condition is that errors follow a Normal distribution.  Given the shape of the Normal distribution, this condition implies that some responses will tend to fall above the line (we will underpredict for these observations), and some responses will tend to fall below the line (we will overpredict for these observations).  Assuming this condition holds adds a lot of structure to the errors and gets toward modeling the distribution of the population, as we did in ANOVA.
-
-The fourth condition, which is the most important, is that for every value of the predictor, the average error is 0.  This acondition implies that the model we have posited for the data generating process is accurate.  That is, the form of the model is appropriate.  The reason we say this is the most important condition is that while we have methods for conducting an analysis while relaxing the remaining three conditions, if this condition is violated, it says that your model is wrong and you need to essentially start over in developing the model.
-
-If you assume all four of these conditions, we have what we refer to as the "Classical Regression Model."
-
-```{block2, type="rmdtip"}
-"Classical Regression Model": For a quantitative response and $p$ predictors (which could include indicators to represent a categorical variable), the classical regression model assumes the following data-generating process:
-
-$$(\text{Response})_i = \beta_0 + \sum_{j=1}^{p} \beta_j (\text{Predictor})_{j,i} + \epsilon_i$$
-
-where 
-
-  1. The errors have a mean of 0 for all values of the predictors.
-  2. The errors are independent of one another.
-  3. The errors have the same variability for all values of the predictors.
-  4. The errors follow a Normal Distribution.
+  1. If this condition is violated, it says your model for the data generating process is incorrect.  Generally this is the result of ignoring some curvature or additional feature.
+  2. This condition allows us to interpret the parameters of the model.
   
-It is possible to relax these assumptions; however, this is the default "regression" analysis implemented in the majority of statistical packages.
-```
-
-We have stressed the implications of each condition.  Figure \@ref(fig:regconditions-assumptions) illustrates these conditions for the case of a single quantitative predictor.  The condition that the errors have mean 0 implies that for a given value of the predictor, the average response is given by the line (shown as the green dot in the figure).  The condition of Normality implies that for a given value of the predictor, the response is distributed evenly about the regression line, with some above and some below.  Further, the shape of the Normal distribution implies that these responses will cluster about the line.  The condition of homoskedasticity implies that while the responses vary around the line, they do so the same degree, regardless of the value of the predictor.  Therefore, the model is just as precise for all values of the predictor.  Finally, any two responses must be unrelated.
-
-```{r regconditions-assumptions, echo=FALSE, fig.cap="Illustration of the conditions on the error term for the classical regression model."}
-knitr::include_graphics("./images/RegConditions-Assumptions.jpg")
-```
-
-As with ANOVA, these conditions will allow us to easily model the sampling distribution of our estimates, which is the critical step in developing any type of inference.  In the previous chapter, we considered the following model for the bracketed duration:
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
-
-This model was used to assess the marginal relationship between the bracketed duration and the magnitude overall.  Our hypotheses of interest which captures the question of interest was
-
-  > $H_0: \beta_1 = 0$  
-  > $H_0: \beta_1 \neq 0$
   
-Using the method of least squares, we estimated the parameters in the model; this leads to the following equation for predicting the bracketed duration given the magnitude:
-
-```{r regconditions-slr-fit, echo=FALSE}
-fit.greece.slr <- lm(BD02 ~ Magnitude, data = greece.df)
-```
-
-$$(\text{Brackted Duration}) = `r round(coef(fit.greece.slr)[1], 2)` + `r round(coef(fit.greece.slr)[2], 2)`(\text{Magnitude})$$
-
-Most statistical software packages will present the fit through a table which contains the parameter estimates as well as additional information regarding the parameter estimates.  Table \@ref(tab:regconditions-slr-summary) summarizes the fit for the above model.  The p-values which are included are always testing if the corresponding parameter is equal to 0.  Based on the results, we have strong evidence that the slope coefficient associated with the magnitude differs from 0; that is, we have strong evidence ($p < 0.001$) of a relationship between the bracketed duration and the magnitude of the earthquake.  Further, our data is consistent with this coefficient being in the range of (3.05, 5.917) based on the 95% confidence interval.
-
-```{r regconditions-slr-summary, echo=FALSE}
-fit.greece.slr %>%
-  tidy() %>%
-  cbind(confint_tidy(fit.greece.slr)) %>%
-  mutate(p.value = ifelse(p.value>=0.001, round(p.value, 3), "< 0.001")) %>%
-  select(Term = term,
-         Estimate = estimate,
-         `Standard Error` = std.error,
-         `Lower 95% CI` = conf.low,
-         `Upper 95% CI` = conf.high,
-         `P Value` = p.value) %>%
-  knitr::kable(digits = 3, caption = "Summary of the linear model fit relating the bracketed duration at locations in Greece following an earthquake with the magnitude of the event.")
-```
-
-In addition tot he estimate, a confidence interval and p-value associated with testing whether the parameter is equal to 0, the ouptut also includes the __standard error__ of the estimate.  This is a measure of the variability in the estimate; it is standard deviation associated with the sampling distribution of the statistic.  This is used in the analytical formulas for computing the confidence intervals and p-values reported in the table.
-
-```{definition, defn-standard-error, name="Standard Error"}
-The estimated standard deviation of a statistic; it quantifies the variability in the sampling distribution of the statistic.
-```
-
-
-## Interpretation of the Parameters
-Each of the conditions from the classical regression model can be relaxed, with the exception of the condition that the errors have an average of 0 for all values of the predictors.  Not only does this ensure that the model is correctly specified, but it also provides an interpretation for the parameters.  If the errors are not biasing the average response (since on average, they have a value of 0), then we are able to say that the determinisic portion of our model is giving the _average_ response.
+### Interpreting the Parameters
+In the second unit, we were were focused on the mean response.  Now, instead of considering the average response overall, we are asking what the average response is for subjects in the population with a specific value of the predictor(s).  When we impose the "mean 0 condition," we are saying the errors are not biasing the average response (since on average, they have a value of 0); therefore, we are able to say that the determinisic portion of our model is giving the _average_ response for a specified value of the predictor(s).
 
 ```{block2, type="rmdkeyidea"}
 The deterministic portion of a regression model specifies the _average_ value of the response given the value(s) of the predictor(s).
 ```
 
-As an example, consider the [Seismic Activity Case Study](#CaseGreece).  Specifically, consider our model which predicted the bracketed duration as a function of both the magnitude of the earthquake and the distance from the location to the center of the earthquake:
+As an example, consider our model for the [Seismic Activity Case Study](#CaseGreece) which predicted the bracketed duration as a function of the magnitude of the earthquake:
 
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
+$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
 
-Using the method of least squares, we are able to estimate the parameters in this model; the deterministic portion of this model is then estimated as
+When the errors have mean 0 for all magnitudes (our first condition), then earthquakes with a 5.0 magnitude have an _average_ bracketed duration of
 
-```{r regconditions-mlr-fit, echo=FALSE}
-fit.greece.mlr <- lm(BD02 ~ Magnitude + Epicentral_Distance, data = greece.df)
+$$\beta_0 + \beta_1(5)$$
+
+Similarly, earthquakes with a 6.0 magnitude have an _average_ bracketed duration of
+
+$$\beta_0 + \beta_1(6)$$
+
+As we have mentioned, the deterministic portion of the model does not specify the exact response for any individual but the trend.  We are now able to say that the "trend" we are modeling is the average response.  Further, we can estimate this average response by plugging in the least squares estimates $\widehat{\beta}_0$ and $\widehat{\beta}_1$.  Specifically, using the method of least squares, the line of best fit was estimated as
+
+```{r regconditions-slr-fit, echo=FALSE}
+fit.greece.slr <- lm(BD02 ~ Magnitude, data = greece.df)
 ```
 
-$$(\text{Bracketed Duration}) = `r round(coef(fit.greece.mlr)[1],2)` + `r round(coef(fit.greece.mlr)[2],2)` (\text{Magnitude}) + `r round(coef(fit.greece.mlr)[3],2)`(\text{Epicentral Distance})$$
+$$(\text{Bracketed Duration}) = `r round(coef(fit.greece.slr)[1],2)` + `r round(coef(fit.greece.slr)[2],2)` (\text{Magnitude})$$
 
-The full fit is summarized in Table \@ref(tab:regconditions-mlr-summary).
+Therefore, we estimate the average bracketed duration for locations with 5.0 magnitude earthquakes to be `r round(sum(c(1, 5)*coef(fit.greece.slr)), 2)` seconds (`r round(sum(c(1, 6)*coef(fit.greece.slr)), 2)` seconds for locations with 6.0 magnitude earthquakes).  While we do not expect every location which has a 5.0 magnitude earthquake to have a bracketed duration of this length, we expect the bracketed duration to vary about this length of time.  This is huge; it says that when we use a regression model to predict a response, we are actually predicting the _average_ response.  More, we can interpret the parameters themselves.  
 
-```{r regconditions-mlr-summary, echo=FALSE}
-fit.greece.mlr %>%
-  tidy() %>%
-  cbind(confint_tidy(fit.greece.mlr)) %>%
-  mutate(p.value = ifelse(p.value>=0.001, round(p.value, 3), "< 0.001")) %>%
-  select(Term = term,
-         Estimate = estimate,
-         `Standard Error` = std.error,
-         `Lower 95% CI` = conf.low,
-         `Upper 95% CI` = conf.high,
-         `P Value` = p.value) %>%
-  knitr::kable(digits = 3, caption = "Summary of the linear model fit relating the bracketed duration at locations in Greece following an earthquake with the magnitude of the event as well as the distance the location is from the epicenter of the earthquake.")
-```
-
-Using this fit, we are able to estimate the _average_ bracketed duration at a location given the magnitude of an earthquake and the distance it is from the center of the earthquake.  Specifically, following an earthquake with a magnitude of 5.5, a location which is 2 kilometers from the epicenter of the earthquake will experience a bracketed duration of `r round(sum(c(1, 5.5, 2)*coef(fit.greece.mlr)), 2)` seconds, on average.  Remember, the deterministic portion is not trying to explain every single response but the overall trend; we now see that it is doing so by specifying the trend, _on average_.  We do not expect every location which is 2 kilometers away from the epicenter of a 5.5 earthquake to experience `r round(sum(c(1, 5.5, 2)*coef(fit.greece.mlr)), 2)` seconds of strong motion; however, we expect the bracketed duration to vary about this value.
-
-This is huge; it says that when we use a regression model to predict a response, we are actually predicting the _average_ response.  More, we can interpret the parameters themselves.  Let's begin with the intercept term, $\beta_0$.  Notice that in our model above, if we try to predict the bracketed duration for a location where an earthquake occurs (so the distance from the epicenter is 0 kilometers) which has a magnitude of 0, then our least squares estimates predict an average bracketed duration of `r round(coef(fit.greece.mlr)[1] ,2)` seconds.  But, this is the value of $\widehat{\beta}_0$, the estimate for the intercept.  In fact, for any regression model, the intercept $\beta_0$ is the value of the deterministic portion of the model whenever all predictors in the model are set to 0.
+Let's begin with the intercept term, $\beta_0$.  Notice that in our model above, if we try to predict the bracketed duration for a location with an earthquake which has a magnitude of 0, then our model returns $\beta_0$.  In fact, for any regression model, the intercept $\beta_0$ is the value of the deterministic portion of the model whenever all predictors in the model are set to 0.  And, that deterministic portion is the average response.
 
 ```{block2, type="rmdtip"}
-The intercept in a regression model $\beta_0$ represents the _average_ response when all predictors in the model are set equal to 0.  Note that this may often be an unreasonable scenario.
+The intercept in a regression model $\beta_0$ represents the _average_ response when all predictors in the model are set equal to 0.  Note that this may not be practically meaningful in all contexts. 
 ```
 
-For our particular example, the estimate of the intercept does not make sense --- what does it mean to have a duration of `r round(coef(fit.greece.mlr)[1], 2)` seconds?  This can often be the case when trying to interpret the intercept term due to what we call __extrapolation__.  We do not have any data on the bracketed duration for locations which are less than a kilometer from the epicenter of an earthquake; nor do we have data on the bracketed duration when an earthquake has a magnitude of 0 as there is no such thing.  Therefore, we are using a model to predict for a region over which the model was not constructed to operate.  This is a lot like using a screw driver to hammer a nail --- we are using a tool to accomplish a task for which it was not designed.  We should not be surprised when it fails.  The primary reason extrapolation is dangerous is that without data in a particular region, we have no support that the model will continue to hold in that region.  For this reason, unless you have strong scientific justification for why a model will hold over all values of the predictor, extrapolation should be avoided.
+For our particular example, the estimate of the intercept does not make sense --- what does it mean to have a duration of `r round(coef(fit.greece.slr)[1], 2)` seconds?  More, it does not make sense to estimate the average bracketed duration for an earthquake which had a magnitude of 0 (not even an earthquake).  This can often be the case when trying to interpret the intercept term due to what we call __extrapolation__.  We do not have any data on the bracketed duration for locations which experienced an earthquake with a magnitude less than 4.5.  Therefore, we are using a model to predict for a region over which the model was not constructed to operate.  This is a lot like using a screw driver to hammer a nail --- we are using a tool to accomplish a task for which it was not designed.  We should not be surprised when it fails.  The primary reason extrapolation is dangerous is that without data in a particular region, we have nothing supporting that the model will continue to hold in that region.  We have illustrated this when discussing the intercept, but extrapolation can occur in any region for which there is no data.  For this reason, unless you have strong scientific justification for why a model will hold over all values of the predictor, extrapolation should be avoided
 
 ```{definition, label=defn-extrapolation, name="Extrapolation"}
 Using a model to predict outside of a region for which data is available.
 ```
 
-We have seen that the intercept is the average value of the response when the predictors take the value of 0.  How then do we interpret the coefficients (or slopes) associated with each predictor.  We again use an example.  Let's compare the average bracketed duration for a location which is 5 kilometers away from the epicenter of an earthquake which has a magnitude of 3 and one which has a magnitude of 4:
-
-$$
-\begin{aligned}
-  \text{Magnitude of 3:} \quad &(\text{Bracketed Duration}) = `r round(coef(fit.greece.mlr)[1],2)` + `r round(coef(fit.greece.mlr)[2],2)` (3) + `r round(coef(fit.greece.mlr)[3],2)`(5) = `r round(sum(c(1, 3, 5)*coef(fit.greece.mlr)), 2)` \\
-  \text{Magnitude of 4:} \quad &(\text{Bracketed Duration}) = `r round(coef(fit.greece.mlr)[1],2)` + `r round(coef(fit.greece.mlr)[2],2)` (4) + `r round(coef(fit.greece.mlr)[3],2)`(5) = `r round(sum(c(1, 4, 5)*coef(fit.greece.mlr)), 2)`
-\end{aligned}
-$$
-
-Notice the two estimates differ by `r round(coef(fit.greece.mlr)[2], 2)` seconds, which is exactly the value of $\widehat{\beta}_1$, the estimate of the coefficient associated with magnitude in our model.  Notice, however, in order to get this difference, we left the epicentral distance the same in both scenarios.  This leads us to observing that `r round(coef(fit.greece.mlr)[2], 2)` seconds is the change in the average bracketed duration when the magnitude increased by 1 unit while the epicentral distance remained the same.
+We have seen that the intercept is the average value of the response when the predictor has the value of 0.  How then do we interpret the coefficient associated with the predictor (the slope).  We again use an example.  Notice that based on our estimates, the average bracketed duration is `r round(coef(fit.greece.slr)[2], 2)` seconds longer for those locations which experience a 6.0 magnitude earthquake compared to those which experience a 5.0 magnitude earthquake, and this difference is the value of the estimated slope.  This leads us to observing that `r round(coef(fit.greece.slr)[2], 2)` seconds is the change in the average bracketed duration that is associated with a 1-unit increase in the magnitude of an earthquake.
 
 ```{block2, type="rmdtip"}
-The coefficient (or slope) $\beta_j$ in a regression model associated with the $j$-th predictor represents the _average_ change in the response when the $j$-th predictor is _increased_ by 1 unit, _holding all other predictors constant_.
+The coefficient (or slope) $\beta_1$ in a regression model represents the _average_ change in the response associated with a 1 unit _increase_ in the predictor.
 ```
 
-In the previous chapter, we saw that our research questions can be framed in terms of the parameters from the regression model.  The interpretation of these parameters allows us to see that our research questions are characterizing the relationship between the response and the predictor, _on average_.
 
+### Embedding our Question in a Statistical Framework
+Our first fundamental idea centers on the idea that the majority of research questions can be framed in terms of a parameter within the population.  This seemed somewhat intuitive when the parameter was simply the mean response.  With parameters which are the slope and intercept of a line, this seems less clear.  However, this condition that the errors have mean 0 for all values of the predictor (because of its implications on the interpretation of the parameters) ensures that our questions of interest can be framed in terms of the parameters.  Consider the following question:
 
-## Addressing Confounding through our Interpretation
-This phrase "holding all other predictors constant" has extreme power.  It is this understanding of how the parameters are interpreted that we are able to take our first steps toward addressing confounding.  For example, consider the model
-
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
-
-From above, we found that for every kilometer further the epicenter of the earthquake is, we can expect the brackted duration to decrease by `r round(coef(fit.greece.mlr)[3], 2)` seconds, on average.  Someone might argue as follows: "This is not a controlled experiment; therefore, while there is a relationship here, it is possible that what is really happening is that earthquakes which were further away were also smaller in magnitude.  Therefore, it is not the distance that is driving this relationship but the magnitude of the earthquake."  Here, this individual is saying that magnitude is a confounder --- related to both the bracketed duration (response) and the variable of interest (distance from the epicenter).  If we had fit a marginal model, this would be a valid concern.  However, remember our interpretation of $\beta_2$ (and our estimate of it).  Our fit suggests that for every kilometer further the epicenter of the earthquake is, we can expect the bracketed duration to decrease by `r round(coef(fit.greece.mlr)[3], 2)` seconds, on average, _holding the magnitude of the earthquake fixed_.  Therefore, since this estimate is comparing to earthquakes of the same magnitude, magnitude cannot be confounding the relationship observed.  We have isolated the effect of the epicentral distance.
-
-Our solution to confounding is to incorporate the relationship between the confounder and the response into our model.  Then, any remaining variables cannot be affected by the confounder.  Of course this has one major limitation --- we cannot account for any variables which are not recorded.  
-
-There are entire texts devoted to this topic.  Here, we simply emphasize that regression models allow us to control for the confounders we have observed.  The relationships are "adjusted for" these confounders due to the interpretation that a coefficient is the effect "holding all other predictors constant."  Regression models allow us to compare similar groups, which are balanced on these confounders, after the fact (instead of having incorporated these comparisons through the study design).
-
-
-## Empirical Model for the Sampling Distribution
-In Table \@ref(tab:regconditions-mlr-summary), we were able to estimate the decrease in bracketed duration, on average, for each kilometer further that location is from the epicenter of an earthquake while holding the magnitude of the earthquake constant; it is reasonable this average decrease is between 0.036 and 0.118 seconds (95% confidence interval).  However, this estimate is only valid assuming the data is consistent with the conditions of the classical regression model.  What if we are unwilling to make such strong assumptions?  In this section, we discuss a method for making inference under only two of the above conditions:
-
-  - The error in the response for one observation is independent of the error in the response for all other observations.
-  - The error in the responses are on average 0 for all values of the predictors.
+  > On average, is the bracketed duration related to the magnitude of an earthquake?
   
-In order to empirically model the sampling distribution of the estimates in our model, we can appeal to bootstrapping as in the first unit.  Specifically, we can resample (with replacement) from the original sample several times.  For each resample, we ensure we select all variables associated with the selected observation.  For this resampled dataset, we compute the least squares fit (see Figure \@ref(fig:regconditions-bootstrap)).  Since the observations have changed, the least squares fit will also change. By repeating this process over and over again, we can obtain a model for how the estimates would change in repeated sampling.
+Let's consider how we might write this in terms of a null and alternative hypotheses.  
+
+  > $H_0:$ the bracketed duration does not change, on average, as the magnitude changes.  
+  > $H_1:$ the bracketed duration is linearly related, on average, with the magnitude; that is, as the magnitude increases, the bracketed duration changes, on average.
+  
+In order to address this question, we considered the following model for the data generating process:
+
+$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
+
+If the null hypothesis above is true, then that suggests that the bracketed duration is flat on average, regardless of the value of the magnitude.  What would be true about the parameters if that were true?  Remember that $\beta_1$ captures the change in the average bracketed duration as the magnitude increases by 1 unit; and, the null hypothesis says that there is no change in the average bracketed duration as the magnitude changes.  That is, if the null hypothesis is true, $\beta_1 = 0$.  Said another way, we need a model for which changing the value of the magnitude does not affect the resulting bracketed duration --- a flat line.  Therefore, our null and alternative hypotheses can be written as
+
+  > $H_0: \beta_1 = 0$  
+  > $H_1: \beta_1 \neq 0$
+  
+where $\beta_1$ is the parameter linearly relating the bracketed duration to the magnitude.  That is, if the paramter associated with magnitude is 0, then it is plays no role in the data generating process; if it is anything other than 0, then magnitude has a role within the data generating process.  
+
+```{block2, type="rmdkeyidea"}
+Setting a slope parameter to 0 in the model for a data generating process is associated with saying that the corresponding predictor is not associated with the response in a linear fashion --- that it does not belong in the model.
+```
+
+The interpretation of our parameters allows us to see that our research questions are characterizing the relationship between the response and the predictor, _on average_.  As in the previous unit, our questions are about the average response; instead of looking at the overall average, however, we are allowing it to depend upon a predictor.
+
+This first condition on the error term --- holding the average error to be 0 for all values of the predictor --- is only one condition typically placed on the stochastic portion.  We now desribe others.
+
+
+## Additional Conditions
+The second condition we consider is that the noise attributed to one observed individual is independent of the noise attributed to any other individual observed.  That is, the amount of error in any one individual's response is unrelated to the error in any other response observed.  This is the same condition we introduced in Chapter \@ref(MeanModels).  We still want each observation in our data to be independent of one another.
+
+With just these first two conditions (that the average error is 0 for all values of the predictors and the errors are independent of one another), we can use a bootstrap algorithm in order to model the sampling distribution of the least squares estimate for the slope (as well as the intercept).  However, additional conditions are often placed on the error term.
+
+The third condition that is typically placed on the distribution of the errors is that the errors are identically distributed.  Again, we introduced this condition in Chapter \@ref(MeanModels).  However, in the context of regression, this is often described a bit differently.  In particular, if the errors are not identically distributed, it is typically because the variability of the error differs for one value of the predictor compared to another.  Practically, this reveals itself as our response being more precise in one region than in another.  As a result of focusing on the variability of the response for each predictor, this condition is often referred to as _homoskedasticity_ instead of the errors being identically distributed.  
+
+With this additional condition imposed, we are able to modify our bootstrap algorithm when constructing a model for the sampling distribution of the least squares estimates.  Because we are relying on a bootstrap procedure, our model for the sampling distribution or null distribution, depending on whether we are interested in computing a confidence interval or p-value) is empirical.  As a result, our model for the sampling distribution can be unstable in small sample sizes; this can be avoided by building an analytical model for the sampling distribution.  This requires us to impose a fourth condition (common in the engineering and science disciplines) on the distribution of the errors and then rely on some probability theory.
+
+
+### Modeling the Population
+Before we delve into more detail, let's set the stage for the bigger story being told.  Recall that our goal is to say something about the population using a sample.  We have developed a process to address this goal:
+
+  1. Frame our question through a parameter of interest.
+  2. Collect data that allows us to estimate the parameter using the analogous statistic within the sample.
+  3. Summarize the variability in the data graphically.
+  4. Quantify the variability in the statistic through modeling the sampling distribution (or null distribution, whichever is appropriate).
+  5. Using the sampling distribution , quantify the evidence in the sample.
+  
+This process is presented through our _Five Fundamental Ideas of Inference_ and the _Distributional Quartet_.  The key step in this process is quantifying the variability by modeling the _sampling distribution_ (or _null distribution_, whichever is appropriate for our research goal).  We have described the construction of these models empirically, through repeating the study by appropriately resampling the data available and performing the analysis on each resample.
+
+Our goal is still to model the sampling distribution; that is the key inferential step.  Instead of building an empirical model, we can construct an exact analytical model through an additional step: modeling the population directly.
+
+```{block2, type="rmdkeyidea"}
+A model for the sampling distribution of a statistic can often be obtained by placing a model on the distribution of the population.
+```
+
+So, we have two distributional models; the model for the distribution of the population is simply a stepping stone to a model for the sampling distribution of the statistic, which is what we really need.  It is important to separate these steps.  We are not interested in directly modeling the population; we do it in order to construct a model for the sampling distribution.  
+
+There is one other distinction to make: a model for the population is _always_ an assumption.  We hope that the data is consistent with this assumption in order to apply the resulting model for the sampling distribution.  In later chapters, we will discuss how we assess whether our data is consistent with these conditions; for now, we simiply want to understand we are making an assumption when we place such a condition on the stochastic portion of data generating process.
+
+
+## Adding the Assumption of Normality
+Probability, a sub-field of mathematics which is used heavily in statistics, is the discipline of modeling randomness.  In particular, we make use of probability to model a distribution.  In order to get a feel for probability models, consider the following example.
+
+```{example, label=ex-iris, name="Iris Characteristics"}
+The discipline of statistics began in the early 1900's primarily within the context of agricultural research.  Edgar Anderson was a researcher investigating the characteristics of the iris.  He had collected measurements on over one hundred iris flowers, including their petal length and width and their sepal length and width.  The sepal is the area (typically green) beneath the petal of a flower.  It offers protection while the flower is budding and then support for the petals after the flower blooms.
+```
+
+Figure \@ref(fig:regconditions-iris-histogram) is a histogram of the sepal width for the iris plants observed by Edgar Anderson; overlayed is the density plot for the same dataset, which we have described as a smoothed histogram.  Both the histogram and the density plot are empirical models of the distribution of the sepal width.
+
+```{r regconditions-iris-histogram, echo=FALSE, fig.cap="Summary of the distribution of sepal widths for a sample of irises."}
+ggplot(data = iris,
+       mapping = aes(x = Sepal.Width)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.25, colour="black", 
+                 fill="grey75") +
+  geom_density(colour = "black") +
+  labs(x = "Width of the Sepal (cm)") +
+  theme_bw(12) +
+  theme(axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
+Probability models are analytical models for the distribution of a variable.  Instead of constructing a density using data, probability theory posits a functional form for the density.  For example, Figure \@ref(fig:regconditions-iris-normal) overlays the following function on top of the the iris data:
+
+$$f(x) = \frac{1}{\sqrt{0.380\pi}} e^{-\frac{1}{0.380}(x - 3.057)^2}$$
+
+```{r regconditions-iris-normal, echo=FALSE, fig.cap="Summary of the distribution of the sepal widths for a sample of irises with a probability model overlayed."}
+ggplot(data = iris,
+       mapping = aes(x = Sepal.Width)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.25, colour="black", 
+                 fill="grey75") +
+  geom_density(colour = "black") +
+  stat_function(fun = dnorm, colour = "blue", size = 1.1,
+                args = list(mean = mean(iris$Sepal.Width), 
+                            sd = sd(iris$Sepal.Width))) +
+  annotate("segment", x = 3.75, xend = 4, y = 1.1, yend = 1.1,
+           color = "black") +
+  annotate("segment", x = 3.75, xend = 4, y = 1, yend = 1,
+           color = "blue", size = 1.1) +
+  annotate("label", x = 4.1, y = 1.1, label = "Empirical",
+           hjust = "left") +
+  annotate("label", x = 4.1, y = 1, label = "Probability Model",
+           hjust = "left") +
+  labs(x = "Width of the Sepal (cm)") +
+  theme_bw(12) +
+  theme(axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
+A density (whether constructed empirically or posited analytically) is just a model for the distribution of a variable.  Further, all density functions share a few basic properties:
+
+  1.  The density is non-negative for all values of the variable.
+  2.  The area under the density function must equal 1.
+
+While the value on the y-axis is not directly meaningful, density functions provide a link between the value of the variable and the likelihood of it occuring.  Specifically, the probability that a variable falls in a specific range corresponds to the area under the curve in that region.  For example, based on the analytical model described above (the blue curve in the figure), the probability that an iris has a sepal width between 3.5 and 4 centimeters is `r round(pnorm(4, mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width)) - pnorm(3.5, mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width)), 2)`, illustrated in Figure \@ref(fig:regconditions-iris-prob).  That is, there is a `r 100*round(pnorm(4, mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width)) - pnorm(3.5, mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width)), 2)`% chance we find an irish with a sepal width between 3.5 and 4 centimeters.
+
+```{r regconditions-iris-prob, echo=FALSE, fig.cap="Using the model for a density function to compute a probability."}
+area.dat <- data_frame(
+  x = seq(3.5, 4, length.out = 1000),
+  y = dnorm(x,
+            mean = mean(iris$Sepal.Width),
+            sd = sd(iris$Sepal.Width))
+)
+
+ggplot(data = iris,
+       mapping = aes(x = Sepal.Width)) +
+  geom_blank() +
+  geom_area(data = area.dat,
+            mapping = aes(x = x, y = y),
+            fill = "lightblue") +
+  stat_function(fun = dnorm, colour = "blue", size = 1.1,
+                args = list(mean = mean(iris$Sepal.Width), 
+                            sd = sd(iris$Sepal.Width))) +
+  annotate("label", x = 3.75, y = 0.6, label = "Probability/Area = 0.14",
+           hjust = "left") +
+  labs(x = "Width of the Sepal (cm)") +
+  theme_bw(12) +
+  theme(axis.title.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank())
+```
+
+
+While the above model for the density is not perfect, it does capture many of the characteristics present in the data.  Similar to empirical models, analytical models for distributions are just that --- _models_.  This particular model, characterized by the bell-shape density, is known as the __Normal Distribution__.
+
+```{definition, label=defn-normal-distribution, name="Normal Distribution"}
+Also called the Gaussian Distribution, this probability model is popular for modeling noise within a data-generating process.  It has the following characteristics:
+
+  - It is bell-shaped.
+  - It is symmetric, meaning the mean is directly at its center, and the lower half of the distribution looks like a mirror image of the upper half of the distribution.
+  - Often useful for modeling natural phenomena or sums of measurements.
+  
+The functional form of the Normal distribution is
+$$f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{1}{2\sigma^2}(x - \mu)^2}$$
+
+where $\mu$ is the mean of the distribution and $\sigma^2$ is the variance of the distribution.
+```
+
+
+While there are several nice properties of the Normal Distribution, we are primarily interested in the fact that if the error in a data generating process follows a Normal Distribution (in addition to the other three conditions described above placed on the error term), then the form of the sampling distribution for the least squares estimates of the slope and intercept is known.  That is, with all four conditions in place, we have an analytical model for the sampling distribution.  This means we avoid simulating in order to build a model for the sampling distribution; so, computationally it is faster.  If the errors really are from a Normal Distribution, then we also gain power in our study by imposing this condition.  Finally, such a model does not rely on sufficient data to construct; it is valid for any sample size (of course, large samples will always decrease variability in the estimates, which is a plus).
+
+Let's think about what this condition means for the responses.  Given the shape of the Normal distribution, imposing this condition (in addition to the other conditions) implies that some errors are positive and some are negative.  This in turn implies that some responses will tend to fall above the line (we will underpredict for these observations), and some response will tend to fall below the line (we will overpredict for these observations). 
+
+
+## Classical Regression Model
+We have discussed four conditions we could place on the stochastic portion of the data generating process.  Placing all four conditions on the error term is what we refer to as the "Classical Regression Model."
+
+```{definition, label=defn-classical-regression, name="Classical Regression Model"}
+For a quantitative response and single predictor, the classical regression model assumes the following data-generating process:
+
+$$(\text{Response})_i = \beta_0 + \beta_1 (\text{Predictor})_{i} + \epsilon_i$$
+
+where 
+
+  1. The error in the response has a mean of 0 for all values of the predictor.
+  2. The error in the response for one subject is independent of the error in the response for all other subjects.
+  3. The errors are identically distributed for all values of the predictor.  This is often stated as the variability in the error of the response is the same for all values of the predictor.
+  4. The errors follow a Normal Distribution.
+  
+This is the default "regression" analysis implemented in the majority of statistical packages.
+```
+
+We note that regression need not require these conditions.  Placing all four conditions on the error term results in a specific analytical model for the sampling distribution of the least squares estimates.  Changing the conditions changes the way we model the sampling distribution.
+
+```{block2, type="rmdkeyidea"}
+The model for the sampling distribution of a statistic is determined by the conditions you place on the data generating process.
+```
+
+We have stressed the implications of each condition individually.  Figure \@ref(fig:regconditions-assumptions) illustrates these conditions working together.  The condition that the errors have mean 0 implies that for a given value of the predictor, the average response is given by the line (shown as the green dot in the figure).  The condition of Normality implies that for a given value of the predictor, the response is distributed evenly about the regression line, with some above and some below.  Further, the shape of the Normal distribution implies that these responses will cluster about the line.  The identically distributed condition (specifically homoskedasticity) implies that while the responses vary around the line, they do so the same degree, regardless of the value of the predictor.  Therefore, the model is just as precise for all values of the predictor.  Finally, any two responses must be unrelated.
+
+```{r regconditions-assumptions, echo=FALSE, fig.cap="Illustration of the conditions on the error term for the classical regression model."}
+knitr::include_graphics("./images/RegConditions-Assumptions.jpg")
+```
+
+
+## Imposing the Conditions
+Let's return to our model for the bracketed duration as a function of the magnitude of the corresponding earthquake:
+
+$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \epsilon_i$$
+
+Our hypotheses of interest which captures the question of interest was
+
+  > $H_0: \beta_1 = 0$  
+  > $H_0: \beta_1 \neq 0$
+  
+
+which corresponds to testing whether there is evidence of a linear relationship between the two variables.  Using the method of least squares, we estimated the parameters in the model; this leads to the following equation for estimating the average bracketed duration given the magnitude:
+
+$$(\text{Brackted Duration}) = `r round(coef(fit.greece.slr)[1], 2)` + `r round(coef(fit.greece.slr)[2], 2)`(\text{Magnitude})$$
+
+If we are willing to assume the data is consistent with the conditions for the classical regression model, we are able to model the sampling distribution of these estimates and therefore construct confidence intervals.  Table \@ref(tab:regconditions-slr-summary) summarizes the fit for the above model.  In addition to the least squares estimates, it also contains the __standard error__ of the statistic, quantifying the variability in the estimates.  
+
+```{definition, label=defn-standard-error, name="Standard Error"}
+The estimated standard deviation of a statistic, computed from the model for the statistic's sampling distribution.  It quantifies the variability in the sampling distribution of the statistic.
+```
+
+Finally, there is a 95% confidence interval estimating each parameter.  Notice that based on the confidence interval for the slope, 0 is not a reasonable value for this parameter.  Therefore, we have evidence that the slope coefficient associated with the magnitude differs from 0; that is, we have evidence of a linear relationship between the bracketed duration and the magnitude of the earthquake.  
+
+```{r regconditions-slr-summary, echo=FALSE}
+fit.greece.slr %>%
+  estimate_parameters(confidence.level = 0.95,
+                      assume.identically.distributed = TRUE,
+                      assume.normality = TRUE) %>%
+  rename(Term = term,
+         Estimate = estimate,
+         `Standard Error` = standard.error,
+         `Lower 95% CI` = `95% lower`,
+         `Upper 95% CI` = `95% upper`) %>%
+  knitr::kable(digits = 3, caption = "Summary of the linear model fit relating the bracketed duration at locations in Greece following an earthquake with the magnitude of the event.")
+```
+
+We have described in general how confidence intervals are constructed.  Under the classical regression model, there is an analytical model for the sampling distribution, and it is known.  As a result, the confidence interval can be computed from a formula.
+
+```{block2, type="rmdtip"}
+If the classical regression model is assumed, the 95% confidence interval for the parameter $\beta_j$ can be approximated by
+
+$$\widehat{\beta}_j \pm (1.96)\left(\text{standard error of } \widehat{\beta}_j\right)$$
+
+```
+
+The confidence interval for the change in the average bracketed duration for each 1-unit increase in the magnitude of an earthquake (the slope $\beta_1$) was constructed assuming the classical regression model.  Suppose, however, that we are only willing to impose the following conditions:
+
+  - The error in the bracketed duration is 0 on average for earthquakes of any magnitude.
+  - The error in the bracketed duration for one earthquake is independent of the error in the bracketed duration for any other earthquake.
+  
+Since the conditions have been altered, the model for the sampling distribution of the estimates will change and therefore the corresponding confidence intervals.  Under these conditions, we can appeal to a bootstrapping algorithm.  Specifically, we could resample (with replacement) `r length(residuals(fit.greece.slr))` earthquakes from the original data; for each resample, we compute the least squares fit (see Figure \@ref(fig:regconditions-bootstrap)).  Since the observations selected change with each resample, the least squares estimates will also change. By repeating this process over and over again, we can obtain a model for how the estimates would change in repeated sampling.
 
 ```{r regconditions-bootstrap, echo=FALSE, fig.cap="Illustration of a single iteration of a bootstrap procedure to construct an empirical estimate of the sampling distribution for the estimates of the coefficients in a regression model."}
 knitr::include_graphics("./images/RegConditions-Bootstrap.jpg")
 ```
 
-Figure \@ref(fig:regconditions-mlr-bootstrap-plot) shows empirical models for the sampling distribution of the three estimates from the regression model 
+Using the empirical model of the sampling distribution for each estimate, we can construct confidence intervals.  These updated confidence intervals are shown in Table \@ref(tab:regconditions-slr-summary-alt)
 
-$$(\text{Bracketed Duration})_i = \beta_0 + \beta_1(\text{Magnitude})_i + \beta_2(\text{Epicentral Distance})_i + \epsilon_i$$
-
-which was fit and summarized in Table \@ref(tab:regconditions-mlr-summary).  Overlayed in the figure are the analytical models for the sampling distribution of the estimates under the classical regression model.  We notice that the model assuming the classical regression model conditions is not all that accurate in this case; we explore the reasoning behind this in Chapter \@(Regassessment).  For now, suffice it to say that we should rely on the results from an empirical model instead of the analytical model suggested by the classical regression model.  Once we have a model for the sampling distribution, we can construct confidence intervals and begin performing inference.
-
-```{r regconditions-mlr-bootstrap-plot, echo=FALSE, fig.cap="Empirical models for the sampling distribution of the estimates from a regression model explaining bracketed duration as a function of the magnitude of the earthquake and its distance from the measuring location.  Overlayed are the analytical models for the sampling distribution assuming all conditions for the classical regression model."}
-# Bootstrap Model
-set.seed(201709)
-boot.fit <- boot_model(fit.greece.mlr, method="pairwise")
-
-# Plots
-p1 <- ggplot(data = filter(boot.fit, term=="(Intercept)"),
-             mapping = aes(x = estimate)) +
-  geom_density(fill = "grey75", color = "black", size = 1.1) +
-  stat_function(data = NULL, mapping = NULL,
-                fun = dnorm, args = list(mean = coef(fit.greece.mlr)[1],
-                                         sd = sqrt(diag(vcov(fit.greece.mlr)))[1]),
-                color = "blue", size = 1.1) +
-  labs(x = expression(paste(widehat(beta)[0],"  (Intercept)"))) +
-  theme_bw(12) +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-p2 <- ggplot(data = filter(boot.fit, term=="Magnitude"),
-             mapping = aes(x = estimate)) +
-  geom_density(fill = "grey75", color = "black", size = 1.1) +
-  stat_function(data = NULL, mapping = NULL,
-                fun = dnorm, args = list(mean = coef(fit.greece.mlr)[2],
-                                         sd = sqrt(diag(vcov(fit.greece.mlr)))[2]),
-                color = "blue", size = 1.1) +
-  labs(x = expression(paste(widehat(beta)[1],"  (Magnitude)"))) +
-  theme_bw(12) +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-p3 <- ggplot(data = filter(boot.fit, term=="Epicentral_Distance"),
-             mapping = aes(x = estimate)) +
-  geom_density(fill = "grey75", color = "black", size = 1.1) +
-  stat_function(data = NULL, mapping = NULL,
-                fun = dnorm, args = list(mean = coef(fit.greece.mlr)[3],
-                                         sd = sqrt(diag(vcov(fit.greece.mlr)))[3]),
-                color = "blue", size = 1.1) +
-  labs(x = expression(paste(widehat(beta)[2],"  (Epicentral Distance)"))) +
-  theme_bw(12) +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-
-gridExtra::grid.arrange(p1, p2, p3, nrow = 2)
+```{r regconditions-slr-summary-alt, echo=FALSE}
+set.seed(20180706)
+fit.greece.slr %>%
+  estimate_parameters(confidence.level = 0.95,
+                      assume.identically.distributed = FALSE,
+                      assume.normality = FALSE) %>%
+  rename(Term = term,
+         Estimate = estimate,
+         `Standard Error` = standard.error,
+         `Lower 95% CI` = `95% lower`,
+         `Upper 95% CI` = `95% upper`) %>%
+  knitr::kable(digits = 3, caption = "Summary of the linear model fit relating the bracketed duration at locations in Greece following an earthquake with the magnitude of the event. Only assumes errors are independent and have mean 0.")
 ```
 
-While we do not discuss it thoroughly, if interest is in computing a p-value to address he above hypotheses, we can construct a null distribution in a similar fashion as that discussed in Chapter \@ref(ANOVAmodel) in the context of a regression model.
+While the exact interval differs from what we computed previously, our overall conclusion remains the same (there is evidence of a relationship).  It is reasonable to ask, which confidence interval should we use?  That depends on the conditions you are willing to assume, which is an issue we will tackle soon.
 
 
 
 ## Recap
-We have covered a lot of ground in this chapter, and it is worth taking a moment to summarize the big ideas.  In order to construct a model for the sampling distribution for the estimates of the parameters in the regression model, we took a step back and modeled the data generating process.  Such a model consists of two components: a deterministic component explaining the differences between groups and a stochastic component capturing the noise in the system.
+We have covered a lot of ground in this chapter, and it is worth taking a moment to summarize the big ideas.  In order to construct a model for the sampling distribution for the estimates of the parameters in the regression model, we took a step back and modeled the data generating process.  Such a model consists of two components: a deterministic component explaining the differences in the response as a function of the predictor and a stochastic component capturing the noise in the system.
 
 Certain conditions are placed on the distribution of the noise in our model.  With a full set of conditions (classical regression model), we are able to model the sampling distribution analytically.  We can also construct an empirical model for the sampling distribution assuming the data is consistent with fewer conditions.  

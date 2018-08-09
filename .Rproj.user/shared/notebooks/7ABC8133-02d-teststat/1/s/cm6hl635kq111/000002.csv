@@ -1,0 +1,6 @@
+"0","set.seed(20180622)"
+"0","plot.dat <- data_frame("
+"0","  grp = rep(c(""Dataset A"", ""Dataset B""), each = 20),"
+"0","  y = round(rnorm(20, mean = 0, sd = ifelse(grp==""Dataset A"", 1, 5))))"
+"2","Error: Column `y` must be length 1 or 40, not 20
+"

@@ -1,0 +1,4 @@
+"0","summarise_variable(speed ~ 1, data = cars, mean)"
+"2","Error in summarise_variable(speed ~ 1, data = cars, mean) : 
+  could not find function ""summarise_variable""
+"

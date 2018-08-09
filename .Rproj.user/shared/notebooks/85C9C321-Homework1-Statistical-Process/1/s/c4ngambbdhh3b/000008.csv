@@ -1,0 +1,1 @@
+"0","summarize_variable((Activity_Level==""low"") ~ 1, data = bodyfat, percent)"

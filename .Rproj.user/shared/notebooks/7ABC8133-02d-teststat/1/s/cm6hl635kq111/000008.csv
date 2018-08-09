@@ -1,0 +1,7 @@
+"0","  theme_bw(12) +"
+"0","  theme(axis.text.x = element_blank(),"
+"0","        axis.ticks.x = element_blank(),"
+"0","        axis.title.x = element_blank()) +"
+"0","  facet_wrap(~grp)"
+"2","Error: Don't know how to add RHS to a theme object
+"

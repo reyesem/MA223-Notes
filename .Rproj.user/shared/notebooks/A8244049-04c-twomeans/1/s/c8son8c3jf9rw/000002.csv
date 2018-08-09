@@ -1,3 +1,0 @@
-"0","set.seed(201709)"
-"0","samp.distn <- boot_model(fit.babies.two, constant.var = FALSE) %>%"
-"0","  filter(term==""TobaccoYes"")"

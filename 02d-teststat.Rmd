@@ -1,0 +1,199 @@
+# Estimating with Confidence {#SingleTeststat}
+
+In the previous chapter, we estimated the mean response for a single quantitative variable.  In this chapter, we consider hypothesis testing when the parameter of interest is the mean response for a single quantitative variable.
+
+Let's consider the [Birth Weight Case Study](#CaseBabies).  In 2004, when the data was collected, an infant was considered "full term" if it was born anytime between 37 and 42 weeks.  However, in 2013 the [American College of Obstetricians and Gynecologists redefined "full term"](https://journals.lww.com/greenjournal/Fulltext/2013/11000/Committee_Opinion_No_579___Definition_of_Term.39.aspx) to mean an infant born anytime between 39 and 40 weeks.  We will consider the following research question:
+
+  > Is there evidence that the gestation time for infants born in North Carolina exceeds 38 weeks (so that the baby is at least full term on average)?
+
+This question is captured by the following set of hypotheses:
+
+$$H_0: \theta \leq 38 \qquad \text{vs.} \qquad H_1: \theta > 38$$
+
+where $\theta$ is the average gestation period (weeks) of an infant born in North Carolina.  This parameter is also present in the data generating process:
+
+$$(\text{Gestation Period})_i = \theta + \epsilon_i$$
+   
+We will assume that the gestation period for one infant is independent of the gestation period for any other infant and that this data is representative of all infants born in North Carolina; this implies we can assume the errors are independent and identically distributed.
+
+We can estimate the parameter $\theta$ with the average gestation period for the babies in our sample: `r round(mean(babies.df$Gestation), 2)` weeks.  We seek to quantify the evidence against the null hypothesis summarized by this data.
+
+In Chapter \@ref(NullDistns), we developed the null distribution of the statistic used to estimate the parameter.  Following that chapter, we would model the null distribution of the sample mean gestation for a sample of `r nrow(babies.df)` infants.  This null distribution, modeled via bootstrapping assuming the data is consistent with the above conditions on the error term, is shown in Figure \@ref(fig:singleteststat-null-mean). 
+
+```{r singleteststat-null-mean, echo=FALSE, fig.cap="Model of the null distribution of the sample mean gestation period for a sample of 1009 infants. The model is based on 5000 bootstrap replications under the null hypothesis that the average gestation period is 38 weeks."}
+set.seed(20180622)
+
+altered.gestation <- (babies.df$Gestation - mean(babies.df$Gestation)) + 38
+
+boot.index <- matrix(sample(seq(nrow(babies.df)), size = 5000*nrow(babies.df),
+                            replace = TRUE),
+                     nrow = nrow(babies.df), ncol = 5000)
+
+boot.means <- apply(boot.index, 2, function(u){
+  mean(altered.gestation[u])
+})
+
+ggplot(data = data_frame(mean = boot.means),
+       mapping = aes(x = mean)) +
+  geom_histogram(binwidth = 0.01, colour = "black") +
+  labs(x = "Sample Mean Weight of 1009 Infants (g) Under Null Hypothesis", y = "Number of Samples") +
+  theme_bw(12)
+```
+
+This figure was constructed using the following procedure:
+
+  1.  Alter the sample to be representative of having come from a population in which the null hypothesis is true; the data was recentered to have a sample mean of 38.
+  2.  Randomly sample, with replacement, 1009 records from the altered original sample.
+  3.  For this bootstrap resample, compute the mean gestation period and retain this value.
+  4.  Repeat steps 2 and 3 many (say 5000) times.
+  
+The resulting simulated data is illustrated in Table \@ref(tab:singleteststat-bootstrap-mean).  Each row represents the gestation periods for a single resample taken with replacement from the altered original data.  The final column is the computed (and retained), sample mean from each resample.  This is the bootstrap statistic _under the null hypothesis_.
+
+```{r singleteststat-bootstrap-mean, echo=FALSE}
+boot.print <- data_frame(
+  `Value 1` = altered.gestation[boot.index[1, ]],
+  `Value 2` = altered.gestation[boot.index[2, ]],
+  `Value 3` = altered.gestation[boot.index[3, ]],
+  `       ` = "...",
+  `Value 1007` = altered.gestation[boot.index[1007, ]],
+  `Value 1008` = altered.gestation[boot.index[1008, ]],
+  `Value 1009` = altered.gestation[boot.index[1009, ]],
+  `Boostrap Mean` = boot.means
+)
+
+knitr::kable(head(boot.print, 10), digits = 2, caption = "Partial printout of first 10 bootstrap resamples under the null hypothesis and the resulting bootstrap statistic.")
+```
+
+
+Notice that the null distribution is centered on 38; this is not an accident.  Recall that sampling distributions are centered on the true value of the parameter; since a null distribution is just the sampling distribution when the parameter is equal to the null value (in this case 38), it should be centered on the null value.  That is, the null distribution is designed to be centered on the null value in the hypotheses.  In order to determine if our sample is consistent with our expectations, we overlay our observed sample mean ($\widehat{\theta} = 39.11$) on the null distribution.  Since this value is in the far right tail of the null distribution (off the edge of the graph in this case), our sample is _inconsistent_ with the null distribution.  That is, we have evidence that the population from which our sample was drawn has an average gestation period larger than 38 weeks.
+
+
+## Standardized Statistics
+In the above discussion, we compared the observed sample mean to our distribution of expectations if the null hypothesis were true.  We were essentially comparing $\widehat{\theta}$ to 38 while accounting for the sampling variability of our estimate $\widehat{\theta}$, the sample mean.  This is a completely valid approach to inference.  In this section, we consider an equivalent (conceptually), though alternative, approach which will provide a more general framework for inference.
+
+At its heart, hypothesis testing is about comparing two models for the data generating process.  So far, we have stated one of those models:
+
+$$\text{Model 1}: \quad (\text{Gestation Period})_i = \theta + \epsilon_i$$
+
+This is the data generating process under the alternative hypothesis in which no restrictions are placed on the value of $\theta$.  However, _if_ the null hypothesis is true, then the model for the data generating process simplifies to
+
+$$\text{Model 0}: \quad (\text{Gestation Period})_i = 38 + \epsilon_i$$
+
+This may not seem like a simpler model, but it is because there are less (in this case none) unknown parameters.  A null hypothesis essentially places further restrictions on the data generating process.  A hypothesis test is then about comparing these two models.
+
+```{block2, type="rmdkeyidea"}
+Hypothesis testing is about comparing two models for the data generating process.
+```
+
+The hypotheses we have been considering in this chapter could be rewritten as:
+
+$$
+\begin{aligned}
+  H_0: \text{Model 0 is sufficient for explaining the data observed.} \\
+  H_1: \text{Model 0 is not sufficient for explaining the data observed.}
+\end{aligned}
+$$
+
+That is, when conducting a hypothesis test, we are really determining whether the data provides evidence that the model for the data generating process under the null hypothesis is sufficient for explaining the observed data.  This is why we refer to hypothesis testing as assessing model consistency.  We are determining if there is evidence that the data is inconsistent with a proposed model for the data generating process.
+
+Intuitively, the two proposed models would be equivalent (Model 0 would be sufficient for explaining the data) if they both performed similarly in predicting a response.  Model 1 would be preferred (Model 0 would not be sufficient for explaining the data) if it performs better in predicting the response.  We can assess "prediction" by the amount of variability in the data.  For Model 0, the amount of variability can be quantified by
+
+$$SS_0 = \sum_{i=1}^{n} \left[(\text{Gestation Period})_i - 38\right]^2$$
+
+For Model 1, the amount of variability can be quantified by
+
+$$SS_1 = \sum_{i=1}^{n} \left[(\text{Gestation Period})_i - \widehat{\theta}\right]^2$$
+
+where $\widehat{\theta} = 39.11$, the observed sample mean.  Notice that these sums of squared (SS) terms are similar to the definition of sample variance discussed in Chapter \@ref(Summaries), without the scaling factor.  The rationale for using these to assess predictive ability of the model will be further discussed in a later chapter.  Here, we simply note that they are measuring a distance the observed data is from a mean; the difference is whether that mean is unrestricted (and therefore estimated from the data, Model 1) or restricted under the null hypothesis (Model 0).  If $SS_0$ and $SS_1$ were similar, then it would suggest that $\widehat{\theta}$ differs from the null value only due to sampling variability, which would be in line with the null hypothesis.  If, on the other hand, $SS_0$ and $SS_1$ differ substantially from one another, it suggests $\widehat{\theta}$ differs from the null value more than we would expect due to variability alone.  Therefore, the difference in these two sums of squares gives us a measure of the signal in the data against the null hypothesis.  The larger this difference, the stronger the signal.
+
+Unfortunately, the difference between these two values alone is not sufficient.  That is, a signal is not enough without knowing the background noise.  Think about having a radio on in the background of a party, and suppose the radio is set to a specific volume.  If there are not many people talking at the party, it is easy to hear the radio; the signal is strong relative to the background noise.  However, if there are a lot of people talking at the party, the radio is difficult to hear even though its volume hasn't changed; the signal is weak _relative_ to the background noise.  A signal is more difficult to locate if the background noise is elevated.  The same principle holds in data analysis.
+
+Consider Figure \@ref(fig:singleteststat-signal-to-noise).  Suppose we want to use each of these datasets (both containing a sample of size $n = 20$) to test the hypotheses:
+
+$$H_0: \mu = 0 \qquad \text{vs.} \qquad H_1: \mu \neq 0$$
+
+where $\mu$ is the population mean.  Both datasets have _exactly_ the same observed sample mean response (the black diamond in the figure).  Therefore, it can be shown that the difference between $SS_0$ and $SS_1$ is exactly the same for both datasets.  However, just visually, it should be clear that Dataset A provides stronger evidence against the null hypothesis than Dataset B; that is, Dataset A is more inconsistent with a mean of 0.  What is the difference?  The variability; the background noise.
+
+```{r singleteststat-signal-to-noise, echo=FALSE, fig.cap="Illustration of the need to compare a signal to the noise in the data to assess its true strength."}
+set.seed(20180624)
+plot.dat <- data_frame(
+  grp = rep(c("Dataset A", "Dataset B"), each = 20),
+  y = round(rnorm(40, mean = 0, sd = ifelse(grp=="Dataset A", 2, 5))))
+
+sum.plot.dat <- plot.dat %>%
+  group_by(grp) %>%
+  summarise(meany = mean(y))
+
+plot.dat <- full_join(plot.dat, sum.plot.dat, by = "grp") %>%
+  mutate(y = y - meany + 1.5)
+
+ggplot(data = plot.dat, 
+       mapping = aes(x = "", y = y)) +
+  geom_boxplot(size = 1.1) +
+  annotate("point", x = "", y = 1.5, shape = 18, size = 4) +
+  geom_hline(yintercept = 0, linetype = 2, color = "red") +
+  labs(y = "Value of the Response") +
+  theme_bw(12) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank()) +
+  facet_wrap(~grp)
+```
+
+Therefore, when quantifying the strength of a signal in a statistical analysis, it is common to measure the signal relative to the background noise.  Returning to our example for the [Birth Weight Case Study](#CaseBabies), we have that $SS_0 - SS_1$ is our signal.  The noise is the variability in the sample
+
+$$s^2 = \frac{1}{n-1}\sum_{i=1}^{n} \left[(\text{Gestation Period})_i - \widehat{\theta}\right]^2$$
+
+as measured by the sample variance.  Our signal-to-noise ratio is then
+
+$$T^* = \frac{SS_0 - SS_1}{s^2} = 963.2$$
+
+for our example.  Such signal to noise ratios are known as __standardized statistics__.
+
+```{definition, label=defn-standardized-test-statistic, name="Standardized Statistic"}
+A ratio of the signal of the sample and the noise in the sample.  The larger the test statistic, the stronger the evidence of a signal; said another way, the larger the test statistic, the stronger the evidence against the null hypothesis.
+```
+
+```{block2, type="rmdtip"}
+A standardized statistic is often refered to as a "standardized test statistic" because they are heavily used in hypothesis testing.
+```
+
+Just as we constructed the null distribution for the observed sample mean in order to construct a distribution of our expectations under the null hypothesis, we can construct a null distribution of the standardized statistic to determine our expectations of this ratio under the null hypothesis.  Figure \@ref(fig:singleteststat-null) provides a model for this distribution.  This is constructed in the same way as we did the null distribution for the sample mean except that instead of retaining the sample mean from each resample, we compute and retain the standardized statistic from each resample.
+
+```{r singleteststat-null, echo=FALSE, fig.cap="Model of the null distribution of the standardized statistic for a sample of 1009 infants. The model is based on 5000 bootstrap replications under the null hypothesis that the average gestation period is 38 weeks."}
+boot.var <- apply(boot.index, 2, function(u){
+  var(altered.gestation[u])
+})
+
+boot.t <- nrow(babies.df)*(boot.means - 38)^2/boot.var
+
+ggplot(data = data_frame(tstat = boot.t),
+       mapping = aes(x = tstat)) +
+  geom_histogram(binwidth = 0.5, colour = "black") +
+  labs(x = "Standardized Statistic Under Null Hypothesis", y = "Number of Samples") +
+  theme_bw(12)
+```
+
+Notice that we reach the same conclusions.  Our data is inconsistent with null hypothesis because our observed test statistic of 963.2 is in the far right tail of the null distribution.  That is, if the null distribution were true, it would be very unlikely to obtain a sample which was this extreme due to sampling variability alone.
+
+So, if our conclusions do not change, why the two different approaches?  It turns out there is some theory that says bootstrapping standardized statistics tends to behave computationally a bit better, and these standardized statistics are a bit easier to model analytically using probability theory.  We prefer talking about them because it again provides a nice overarching framework.
+
+```{block2, type="rmdkeyidea"}
+Quantifying evidence compares the signal in the data to the noise.
+```
+
+Before moving on, we should note that there is not a unique standardized statistic.  Other standardized statistics are often quoted, such as
+
+$$\frac{\sqrt{n}\left(\widehat{\theta} - 38\right)}{s}$$
+
+It can be shown that many such standardized statistics are related to the one we have described above (this one is the square root of that described above, for example).  When the same conditions are applied, various standardized statistics yield the same results.  Again, we opt for the one described earlier because it will provide continuity in the text.
+
+
+## Computing the P-value
+Now that we have a model for the null distribution of the standardized statistic, we can compute a p-value.  The p-value is the probability of observing a sample more extreme due only to sampling variability.  Our standardized statistic has the form
+
+$$T^* = \frac{SS_0 - SS_1}{s^2}$$
+
+If the sample were more extreme --- that is, if it produced a larger signal --- then we would expect the difference between $SS_0$ and $SS_1$ to be even larger.  Therefore, larger values of the standardized statistic present stronger evidence of the data.  So, when looking at the null distribution of the standardized statistic, computing the p-value corresponds to computing the area to the right of the observed standardized statistic.
+
+Looking back at Figure \@ref(fig:singleteststat-null), our observed standardized statistic is not even on the graphic, meaning the p-value would be essentially 0.  The data therefore provides strong evidence that the average gestation period of infants born in North Carolina exceeds 38 weeks.

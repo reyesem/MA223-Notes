@@ -1,0 +1,95 @@
+# Assessing Modeling Assumptions {#ANOVAassessment}
+
+In this unit we have discussed a model relating a quantitative response to a categorical predictor.  For the [Organic Food Case Study](#CaseOrganic), our model had the form
+
+$$(\text{Moral Expectation Score})_i = \mu_1 (\text{Group})_{1,i} + \mu_2 (\text{Group})_{2,i} + \mu_3 (\text{Group})_{3,i} + \epsilon_i$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{Group})_{1,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to organic foods} \\
+    0 & \text{if i-th subject not exposed to organic foods} 
+    \end{cases} \\
+  (\text{Group})_{2,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to comfort foods} \\
+    0 & \text{if i-th subject not exposed to comfort foods} 
+    \end{cases} \\
+  (\text{Group})_{3,i} &= \begin{cases}
+    1 & \text{if i-th subject exposed to control foods} \\
+    0 & \text{if i-th subject not exposed to control foods}
+    \end{cases}
+\end{aligned}
+$$
+
+Further, we considered three conditions on the distribution of the error term:
+
+  1.  The error in the moral expectation score for one individual is independent of the error in the moral expectation score for all other individuals.  
+  2.  The variability in the error for the moral expectation score within a group is the same for any food exposure group.
+  3.  The error in the moral expectation score follows a Normal distribution.
+  
+Unfortunately, we cannot just state that these are the conditions we hope hold for the data generating process and move on our merry way.  Since the p-value was computed assuming these conditions hold, the p-value is only meaningful if the data is consistent with these conditions.  Otherwise, the p-value is meaningless.  Just as in Chapter \@ref(Regassessment), we use residuals to assess these conditions qualitatively.
+
+
+## Assessing Independence
+  > The error in the moral expectation score for one individual is independent of the error in the moral expectation score for all other individuals.
+  
+Generally, independence is assessed through the context of the data collection scheme.  By carefully considering the manner in which the data was collected, we can typically determine whether it is reasonable that the errors in the response are independent of one another.  Some key things to consider when examining the data collection process:
+
+  - Are there repeated observations made on the same subject?  This often suggests some type of relationship between the responses and therefore would not be consistent with errors being independent.
+  - Is the response measured over time (time-series) such as daily temperature over the course of a month?  Time-series data often exhibits strong period-to-period relationships suggesting the errors are not independent.  For example, if it is hot today, it will probably be hot tomorrow as well.
+  - Is there a learning curve in how the data was collected?  Learning curves again suggest some dependence from one observation to the next.  For example, a new nurse may become better at collecting pulse readings with more practice over time.
+  - Measurement devices which are failing over time will introduce a dependence from one observation to the next.  Imagine a bathroom scale that begins to add an additional pound each day.  Then, being above average weight one day will most likely lead to an above average weight the next, due primarily to the measurement device.
+Generally, independence is assessed through the context of the data collection scheme.  By carefully considering the manner in which the data was collected, we can typically determine whether it is reasonable that the errors in the response are independent of one another.  Some key things to consider when examining the data collection process:
+  - Are there repeated observations made on the same subject (such as blocking)?  This often suggests some type of relationship between the responses and therefore would not be consistent with errors being independent.
+  - Is the response measured over time (time-series) such as daily temperature over the course of a month?  Time-series data often exhibits strong period-to-period relationships suggesting the errors are not independent.  For example, if it is hot today, it will probably be hot tomorrow as well.
+  - Is there a learning curve in how the data was collected?  Learning curves again suggest some dependence from one observation to the next.
+  
+These last three points illustrate a particular deviation from our condition of independence in which two observations collected close together in time are related.  When we know the order in which the data was collected, we can assess whether the data tends to deviate from the condition of independence in this manner.  This is done graphically through a time-series plot of the residuals.  If two errors were unrelated, then the value of one residual should tell us nothing about the value of the next residual.  Therefore, a plot of the residuals over time should look like noise (since residuals are supposed to be estimates of noise).  If there are any trends, then it suggests the data is not consistent with independence.  Of course, to construct such a plot, we need to know the order in which the data was collected.
+
+For the [Organic Food Case Study](#CaseOrganic), participants were assessed simultaneously within a large lecture.  Therefore, there is no ordering in time to be concerned about.  Therefore, a time-series plot of the residuals would not be useful here.  Considering the context, students worked individually on the questionnaire; this suggests it is reasonable to assume that the errors in the moral expectation score are unrelated to one another.  
+
+
+## Assessing Homoskedasticity
+We want the variability in the errors within a group to be the same across the groups.  We can do this by examining side-by-side boxplots (or jitter plots, etc.) of the residuals within each of the groups.  Figure \@ref(fig:anovaassessment-variance-organic) shows the residuals for each individual across the various groups.  Notice that the boxes for each group are roughly the same size; that is, the interquartile ranges are similar.  This suggests that the variability within each group is similar from one group to the next.  That is, the data is consistent with this condition.
+
+```{r anovaassessment-variance-organic, echo=FALSE, fig.cap="Comparison of the residuals predicting the moral expectation score for college students exposed to different types of food."}
+ggplot(data = organic.augmented,
+       mapping = aes(y = .resid,
+                     x = Food_Condition)) +
+  geom_boxplot() +
+  labs(y = "Residuals",
+       x = "Food Exposure Group") +
+  theme_bw(12)
+```
+
+There is another (equivalent) approach to assessing this condition.  If the variability in the errors for each response is the same, then the variability of the response must be the same for each group.  Therefore, we can also examine the side-by-side boxplots (or jitter plots, etc.) of the response instead of the residuals.  Figure \@ref(fig:anovaassessment-variance-organic-alt) shows the moral expectation score for each individual across the various groups.  Just as in the previous graphic, the interquartile ranges are similar for each of the three groups indicating the data is consistent with this condition.
+
+```{r anovaassessment-variance-organic-alt, ref.label="anovamodel-organic-boxplot", echo=FALSE, fig.cap="Comparison of the moral expectations for college students exposed to different types of food."}
+```
+
+
+## Assessing Normality
+Just as in Chapter \@ref(Regassessment), we emphasize the probability plot as a method for assessing whether data is consistent with being drawn from a Normal distribution.
+
+Figure \@ref(fig:anovaassessment-normal-organic) shows the probability plot for the residuals from the [Organic Food Case Study](#CaseOrganic).
+
+```{r anovaassessment-normal-organic, echo=FALSE, fig.cap="Probability plot of the residuals for the Organic Food Case Study.  If the errors follow a Normal distribution, we would expect the residuals to fall along a straight line."}
+ggplot(data = organic.augmented,
+       mapping = aes(sample = .resid)) +
+  stat_qq() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_bw(12)
+```
+
+Overall, the points do tend to follow a straight line.  There are some deviations from a linear relationship at each end of the plot, but the deviations are not extreme.  Deviations in the tails are common, especially with larger datasets.  And with naturally less data in the tails, it can become more difficult to establish a pattern.  We are generally not concerned unless these tails form a part of a larger pattern of deviating from the linear trend.  We argue that these residuals are consistent with the errors having a Normal distribution.
+
+
+## General Tips for Assessing Assumptions
+As in Chapter \@ref(Regassessment), we want to point out three things that should be kept in mind when assessing these conditions:
+
+  1. We can never prove a condition is satisfied; we can only determine whether the data is consistent with a condition or whether it is not consistent with a condition.
+  2. The analysis has specific conditions placed on the error term; we choose whether to assume such a condition is reasonable by examining residuals.
+  3. A sample should always be consistent with the conditions you are relying on to interpret a p-value or confidence interval.
+  

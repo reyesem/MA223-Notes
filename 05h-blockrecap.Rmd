@@ -1,0 +1,200 @@
+# Using the Tools Together {#Blockrecap}
+
+This unit introduced a framework for determining if there is an association between a quantitative response and a categorical predictor when the responses are correlated due to blocks.  We formed a standardized statistic for measuring the signal, and developed a model for the data-generating process incorporating the block effect which allowed us to model the null distribution of the standardized statistic.  In this chapter, we pull these tools together once more to answer a research question.
+
+For the [Frozen Yogurt Case Study](#CaseYogurt), we found no evidence that people rated the taste differently, on average, for any of the vendors.  However, the students conducting the study also recorded the how the participants rated the texture and appearance of the yogurt.  In this chapter, we will use the data to answer the following question:
+
+  > Is there evidence that the appearance of the yogurt differs across vendors?
+  
+  
+## Framing the Question (Fundamental Idea I)
+As stated, the above question is ill-posed.  We have not identified a parameter of interest.  We refine this question to be
+
+  > Is there evidence that, on average, the appearance rating differs for at least one of the vendors?
+  
+This question could also be stated as the following set of hypotheses:
+
+  > Let $\mu_{\text{East Side}}$, $\mu_{\text{South Side}}$ and $\mu_{\text{Name Brand}}$ represent the average appearance rating (on a scale of 1-10) of vanilla yogurt from each of the three vendors.  
+  > $H_0: \mu_{\text{East Side}} = \mu_{\text{South Side}} = \mu_{\text{Name Brand}}$  
+  > $H_1:$ At least one mean differs
+  
+
+## Getting Good Data (Fundamental Idea II)
+As we are working with previously collected data, our goal in this discussion is not how best to collect the data but making note of the limitations of the data as a result of how it was collected.  As before, each participant sampled yogurt from each of the three vendors, creating natural blocks.  That is, each subject forms a unique block.  Since it is quite reasonable that appearance preferences vary substantially between individuals, forming blocks out of subjects should allow us to increase the power of the study because we are accounting for a substantial source of variability in the appearance ratings.
+
+The study was was a controlled experiment since the order in which the samples from each vendor were presented to the participants was randomized.  While the study made use of random allocation, it did not make use of random selection.  The participants were students taking a particular course; however, it may be reasonable to assume they are representative of college students in the area.  The sample size was also limited as only students in this course were included in the study.
+
+If you compare the above paragraph to the corresponding section in Chapter \@ref(ANOVArecap), you might be confused because in that section, we described that changing the question resulted in the study no longer being a controlled experiment.  However, here, we changed the question of interest and retained the fact that the study was controlled.  Why?  The question of whether a study is controlled is always in regard to whether random allocation was used.  In general, if you change the response but keep the primary factor of interest unchanged, the study will remain a controlled experiment.  If you change the factor under study, it will no longer be controlled.
+
+
+## Presenting the Data (Fundamental Idea III)
+Our question here is examining the relationship between a quantitative response (appearance rating) and a categorical predictor (vendor) in the presence of blocks (subjects).  Figure \@ref(fig:blockrecap-plot) compares the distribution of the appearance rating for the three vendors.  
+
+```{r blockrecap-plot, echo=FALSE, fig.cap="Comparison of the appearance ratings for yogurt from three vendors. Color is used to distinguish ratings from the same subject."}
+set.seed(20180808)
+
+ggplot(data = yogurt.df,
+       mapping = aes(x = Type, y = Appearance, color = `Participant ID`)) +
+  geom_jitter(width = 0.2, height = 0) +
+  labs(x = "Yogurt Vendor", y = "Appearance Rating", color = "") +
+  guides(color = "none") +
+  theme_bw(12) 
+```
+
+Based on the above graphic, there appears to be less variability among the appearance for the South Side Yogurt vendor, but the average rating appears similar for all three vendors.
+
+
+## Quantifying the Variability in the Estimate (Fundamental Idea IV)
+In order to measure the size of the signal, we can compute the standardized statistic 
+$$T = \frac{MSTrt}{MSE}$$
+
+But, we need to be sure that these mean squares are computed from a model which accounts for the correlation in the responses.  In particular, we consider the following model:
+
+$$
+\begin{aligned}
+  (\text{Appearance Rating})_i &= \mu_1 (\text{East Side})_i + \mu_2 (\text{South Side})_i + \mu_3 (\text{Name Brand})_i \\
+    &\qquad + \beta_2 (\text{Subject 2})_i + \beta_3 (\text{Subject 3})_i + \beta_4 (\text{Subject 4})_i \\
+    &\qquad + \beta_5 (\text{Subject 5})_i + \beta_6 (\text{Subject 6})_i + \beta_7 (\text{Subject 7})_i \\
+    &\qquad + \beta_8 (\text{Subject 8})_i + \beta_9 (\text{Subject 9})_i + \epsilon_i
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{East Side})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with east side yogurt vendor} \\
+    0 & \text{if i-th rating not associated with east side yogurt vendor}
+    \end{cases} \\
+  (\text{South Side})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with south side yogurt vendor} \\
+    0 & \text{if i-th rating not associated with south side yogurt vendor}
+    \end{cases} \\
+  (\text{Name Brand})_i &= \begin{cases}
+    1 & \text{if i-th rating associated with name brand yogurt vendor} \\
+    0 & \text{if i-th rating not associated with name brand yogurt vendor}
+    \end{cases} \\
+  (\text{Subject j})_i &= \begin{cases}
+  1 & \text{i-th observation taken from Subject j} \\
+  0 & \text{i-th observation not taken from subject j}
+  \end{cases}
+\end{aligned}
+$$
+
+We note here that $\mu_1$ is not the same as $\mu_{\text{East Side}}$; however, testing
+
+$$H_0: \mu_1 = \mu_2 = \mu_3$$
+
+is equivalent to testing
+
+$$H_0: \mu_{\text{East Side}} = \mu_{\text{South Side}} = \mu_{\text{Name Brand}}.$$
+
+```{r blockrecap-models, echo=FALSE}
+# Full Model
+yogurt.appearance.h1 <- lm(Appearance ~ Type + `Participant ID`, data = yogurt.df)
+
+
+# ANOVA table
+yogurt.appearance.aov <- anova(yogurt.appearance.h1) %>% 
+  tidy()
+```
+
+We observe a standardized statistic of `r round(yogurt.appearance.aov[1,5], 2)`.  Of course, if we were to collect a new sample, we would expect this value to change.  If we want to determine if this value is something we would expect when the appearance were similar for all vendors, we need a model for its null distribution.  To do so, we impose the following conditions:
+
+  1. The error in the appearance rating for any one observation is independent of the error in the appearance rating for any other observation.
+  2. The error in the appearance rating has the same distribution for all observations.
+  3. The error in the appearance rating follows a Normal distribution.
+  4. The effect of each individual subject on the appearance rating is the same for all observations from that subject.
+  5. The effect of each individual subject on the appearance rating is independent of the effect of any other individual subject.
+  6. The effect of each individual subject on the appearance rating is unrelated to the error in the appearance rating for any observation.
+  7. The effect of each individual subject on the appearance rating follows a Normal distribution.
+  
+Under these three assumptions, we are able to construct a model for the null distribution of the standardized statistic.  Figure \@ref(fig:blockrecap-classical-null-model) illustrates the null distribution assuming these conditions are satisfied.
+
+```{r blockrecap-classical-null-model, echo=FALSE, fig.cap="Model for the standardized test statistic measuring the signal comparing the appearance ratings of yogurt from three vendors while accounting for the repeated measurements taken on subjects.  This model is constructed assuming the classical repeated measures ANOVA conditions are satisfied."}
+set.seed(201709)
+
+null.dat <- data_frame(
+  x = seq(0, 4, length.out = 1000),
+  y = df(1000, 
+         df1 = yogurt.appearance.aov[1,"df"],
+         df2 = yogurt.appearance.aov[3, "df"])
+)
+
+ggplot(data = null.dat,
+       mapping = aes(x = x, y = y)) +
+  geom_blank() +
+  stat_function(fun = df, args = list(df1 = yogurt.appearance.aov[1, "df"],
+                                      df2 = yogurt.appearance.aov[3, "df"]),
+                color = "blue", size = 1.1) +
+  labs(x = "Standardized Test Statistic Assuming Null Hypothesis") +
+  theme_bw(12) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank())
+```
+
+Before we can use this model to make any conclusions regarding our question of interest, we need to address the fact that we have assumed certain conditions are satisfied.  We need to assess whether the data is consistent with these assumptions.  This requires examining the residuals for the model.  
+
+First, we discuss the assumption of independence.  Since each round of tasting involved all students tasting simultaneously, there is no natural ordering to the data.  Instead, we rely on the context of the problem to make some statements regarding whether the data is consistent with this condition (whether making this assumption is reasonable).  It is reasonable that the errors are independent.  One case in which this might be violated is if students had visible reactions (grimmaced for example) when the yogurt was placed in front of them; if others noticed, it might bias their own ratings of the appearance.  As the participants also designed the study and had a vested interest in the quality of the data, it is unlikely there were such issues, and we feel it is reasonable to assume independence. 
+
+Again, note that there is a condition of independence; we are simply saying whether we are willing to assume the condition is satisfied.  There is no way to ensure the condition holds.
+
+In order to assess if the errors are independent and to some degree whether the random effects are constant for all observations from a subject, we examine a plot of the residuals against the predicted values for each observation (Figure \@ref(fig:blockrecap-resids)).  As the spread of the plot is relatively constant, and the errors tend to center around 0, the data is consistent with these conditions.
+
+```{r blockrecap-resids, echo=FALSE, fig.cap="Plot of the residuals against the predicted values from a model comparing the appearance rating across vendors while accounting for the subject effect."}
+yogurt.appearance.aug <- augment(yogurt.appearance.h1)
+
+ggplot(data = yogurt.appearance.aug,
+       mapping = aes(y = .resid, x = .fitted)) +
+  geom_point() +
+  labs(y = "Residuals", x = "Predicted Appearance Rating") +
+  theme_bw(12)
+```
+
+Finally, to assess the condition that the distribution of the errors is Normal, we consider a probability plot of the residuals (Figure \@ref(fig:blockrecap-resids-probplot)).  Given that the residuals tend to display a linear relationship, it is reasonable that the residuals represent a sample from a Normal Distribution.  That is, it is reasonable that the errors follow a Normal Distribution.
+
+```{r blockrecap-resids-probplot, echo=FALSE, fig.cap="Probability plot assessing the assumption that the errors for our model comparing appearance rating across vendors follow a Normal Distribution."}
+ggplot(data = yogurt.appearance.aug,
+       mapping = aes(sample = .resid)) +
+  stat_qq() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  theme_bw(12)
+```
+
+Given that we are comfortable assuming the conditions on the error term are reasonable, and we assume the conditions on the random effects are also reasonable, we can make use of the analytical model for the null distribution in Figure \@ref(fig:blockrecap-classical-null-model).
+
+
+## Quantifying the Evidence (Fundamental Idea V)
+Now that we have a model for the null distribution, we can determine how extreme our particular sample was by comparing the standardized statistic for our sample with this null distribution.  We can measure this through computation of a p-value, the probability that we would observe a standardized statistic of this magnitude or higher by chance alone if there were no difference in the mean appearance ratings between the three vendors.  This is summarized in Table \@ref(tab:blockrecap-anova-table) below.
+
+```{r blockrecap-anova-table, echo=FALSE}
+yogurt.appearance.aov %>%
+  rename(Source = term,
+         DF = df,
+         SS = sumsq,
+         MS = meansq,
+         F = statistic,
+         `P-value` = p.value) %>%
+  mutate(Source = recode(Source,
+                         "Type" = "Vendor (Treatment)",
+                         "`Participant ID`" = "Subject (Block)",
+                         "Residuals" = "Error")) %>%
+  add_row(Source = "Total",
+          DF = sum(.$DF),
+          SS = sum(.$SS)) %>%
+  knitr::kable(digits = 3, caption = "ANOVA table summarizing the comparison of the appearance ratings across vendors for the Frozen Yogurt Case Study.")
+```
+
+From the results, we can conclude that there is no evidence (p = `r round(yogurt.appearance.aov[1,6], 3)`) of a relationship between the appearance rating and the yogurt vendor.  
+
+
+## Conclusion
+Throughout this unit, we have examined a framework for examining the association between a quantitative response and a categorical predictor when there is correlation among the responses.  This reinforces a couple of big ideas we have seen throughout this text:
+
+  - The key to measuring a signal is to partition the variability in the response.
+  - A standardized statistic is a numeric measure of the signal strength in the sample.
+  - Modeling the data-generating process provides us a way of modeling the sampling distribution of the parameter estimates and the null distribution of a standardized statistic.
+  - Conditions are often placed on the noise portion of the model for the data-generating process; before assuming these conditions are met, we should graphically assess whether the data is consistent with these conditions.
+
